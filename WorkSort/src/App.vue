@@ -3,18 +3,27 @@
   // JSON array of job objects
   const jobs = ref([])
 
+  const nextID = ref(0)
+
   // input variables
   const tempTitle = ref("")
   const tempCompany = ref("")
   const tempDate = ref("")
   const tempURL = ref("")
 
-  // whether input fields are visible (true when inputting new job)
-  const showInputs = ref(false)
+  // show input fields if addJobs
+  const showInputs = computed(() => {
+    return addingJobs.value
+  })
 
-  // enable dummy job for input
+  const addingJobs = ref(false)
   function startNewJob(){
-    showInputs.value = true
+    addingJobs.value = true
+  }
+
+  const deletingJobs = ref(false)
+  function startDeleteJob(){
+    deletingJobs.value = true
   }
 
   // computes which jobs are currently displayed
@@ -23,21 +32,33 @@
   })
 
   // add filled-out job object to jobs
-  function finalizeJob(){
+  function finalizeNewJob(){
     // add new job object
     jobs.value.push({
+      id: nextID.value++,
       title: tempTitle.value,
       company: tempCompany.value,
       date: tempDate.value,
       url: tempURL.value,
     })
-    // hide input fields
-    showInputs.value = false
+    // no longer adding jobs
+    addingJobs.value = false
     // clear input fields
     tempTitle.value = ""
     tempCompany.value = ""
     tempDate.value = ""
     tempURL.value = ""
+  }
+
+  function abortNewJob(){
+    addingJobs.value = false
+  }
+
+  function finalizeDeleteJob(jobID){
+    // remove job with matching ID
+    jobs.value = jobs.value.filter((job) => job['id'] != jobID)
+    // no longer deleting jobs
+    deletingJobs.value = false
   }
 
   // guess favicon url (https://example.com/xyz/... => https://example.com/favicon.ico)
@@ -69,21 +90,42 @@
     <h2>Organize your job applications</h2>
   </header>
   <aside>
-    <button @click="startNewJob()" v-if="!showInputs">New Job</button>
-    <form v-else>
+    <button @click="startNewJob()" v-if="!addingJobs">New Job</button>
+    <button @click="startDeleteJob()" v-if="!deletingJobs">Delete Job</button>
+    <button @click="finalizeDeleteJob()" v-if="deletingJobs">Done</button>
+    <form v-if="showInputs">
       <input v-model="tempTitle" placeholder="Title">
       <input v-model="tempCompany" placeholder="Company">
       <input type="date" v-model="tempDate" placeholder="Date Applied">
       <input type="url" v-model="tempURL" placeholder="Link">
-      <button @click="finalizeJob()">Add Job</button>
+      <button @click="finalizeNewJob()">Add Job</button>
+      <button @click="abortNewJob()">Cancel</button>
     </form>
   </aside>
   <main>
-    <ul>
-      <li v-for="job in jobsDisplayed">
-        <img :src="getFavicon(job['url'])" height="32px" width="32px"> Title: {{ job['title'] }} | Company: {{ job['company'] }} | Date Applied: {{ job['date'] }} | <a :href="job['url']">Link</a>
-      </li>
-    </ul>
+    <table>
+      <thead>
+        <tr>
+          <th>(Icon)</th>
+          <th>Title</th>
+          <th>Company</th>
+          <th>Date Applied</th>
+          <th>Link</th>
+          <th v-if="deletingJobs">Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="job in jobsDisplayed">
+          <td>{{ job['id'] }}</td>
+          <td><img alt="" :src="getFavicon(job['url'])" height="16px" width="16px"></td>
+          <td>{{ job['title'] }}</td>
+          <td>{{ job['company'] }}</td>
+          <td>{{ job['date'] }}</td>
+          <td><a :href="job['url']">Visit</a></td>
+          <td v-if="deletingJobs"><button @click="finalizeDeleteJob(job['id'])">X</button></td>
+        </tr>
+      </tbody>
+    </table>
   </main>
 </template>
 
