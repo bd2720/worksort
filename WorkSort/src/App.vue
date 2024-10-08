@@ -10,6 +10,13 @@
   const tempCompany = ref("")
   const tempDate = ref("")
   const tempURL = ref("")
+  // clear fields
+  function clearInputs(){
+    tempTitle.value = ""
+    tempCompany.value = ""
+    tempDate.value = ""
+    tempURL.value = ""
+  }
 
   // show input fields if adding jobs or editing a specific job
   const showInputs = computed(() => {
@@ -23,6 +30,7 @@
 
   const addingJobs = ref(false)
   function startNewJob(){
+    clearInputs()
     addingJobs.value = true
   }
 
@@ -53,11 +61,6 @@
     })
     // no longer adding jobs
     addingJobs.value = false
-    // clear input fields
-    tempTitle.value = ""
-    tempCompany.value = ""
-    tempDate.value = ""
-    tempURL.value = ""
   }
 
   function abortNewJob(){
@@ -66,24 +69,34 @@
 
   // needed for storing selected job while editing; null means unselected
   const selectedJobID = ref(null)
+  // reference to the selected job object
+  const selectedJob = computed(() => {
+    if(!selectedJobID.value) return null
+    // sequentially search for job object in jobs array
+    for(const job of jobs.value){
+      if(job['id'] == selectedJobID.value){
+        return job
+      }
+    }
+    return null
+  })
   // begin editing job information
   function selectJob(jobID){
     // save the selected job id
     selectedJobID.value = jobID
+    // init. fields with specified job information
+    tempTitle.value = selectedJob.value['title']
+    tempCompany.value = selectedJob.value['company']
+    tempDate.value = selectedJob.value['date']
+    tempURL.value = selectedJob.value['url']
   }
 
   function editJob(){
     // save new information to the currently selected job
-    jobs.value = jobs.value.filter((job) => {
-      // edit nonempty fields of selected job
-      if(job['id'] == selectedJobID.value){
-        if(tempTitle.value) job['title'] = tempTitle.value
-        if(tempCompany.value) job['company'] = tempCompany.value
-        if(tempDate.value) job['date'] = tempDate.value
-        if(tempURL.value) job['url'] = tempURL.value
-      }
-      return true // include all jobs in list
-    })
+    selectedJob.value['title'] = tempTitle.value
+    selectedJob.value['company'] = tempCompany.value
+    selectedJob.value['date'] = tempDate.value
+    selectedJob.value['url'] = tempURL.value
     // deselect the job after updating list
     selectedJobID.value = null
   }
