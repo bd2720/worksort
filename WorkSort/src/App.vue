@@ -2,8 +2,8 @@
   import { ref, computed } from 'vue'
   // JSON array of job objects
   const jobs = ref([])
-
-  const nextID = ref(0)
+  // begin jobIDs at 1
+  const nextID = ref(1)
 
   // input variables
   const tempTitle = ref("")
@@ -11,14 +11,24 @@
   const tempDate = ref("")
   const tempURL = ref("")
 
-  // show input fields if addJobs
+  // show input fields if adding jobs or editing a specific job
   const showInputs = computed(() => {
-    return addingJobs.value
+    return addingJobs.value || selectedJobID.value
+  })
+
+  // show functional buttons (Add, Edit, Delete)
+  const showFunctions = computed(() => {
+    return !addingJobs.value && !editingJobs.value && !deletingJobs.value
   })
 
   const addingJobs = ref(false)
   function startNewJob(){
     addingJobs.value = true
+  }
+
+  const editingJobs = ref(false)
+  function startEditJob(){
+    editingJobs.value = true
   }
 
   const deletingJobs = ref(false)
@@ -54,10 +64,48 @@
     addingJobs.value = false
   }
 
-  function finalizeDeleteJob(jobID){
+  // needed for storing selected job while editing; null means unselected
+  const selectedJobID = ref(null)
+  // begin editing job information
+  function selectJob(jobID){
+    // save the selected job id
+    selectedJobID.value = jobID
+  }
+
+  function editJob(){
+    // save new information to the currently selected job
+    jobs.value = jobs.value.filter((job) => {
+      // edit nonempty fields of selected job
+      if(job['id'] == selectedJobID.value){
+        if(tempTitle.value) job['title'] = tempTitle.value
+        if(tempCompany.value) job['company'] = tempCompany.value
+        if(tempDate.value) job['date'] = tempDate.value
+        if(tempURL.value) job['url'] = tempURL.value
+      }
+      return true // include all jobs in list
+    })
+    // deselect the job after updating list
+    selectedJobID.value = null
+  }
+
+  // when "Cancel" is pressed while editing a specific job
+  function deselectJob(){
+    selectedJobID.value = null
+  }
+
+  // exit editing mode
+  function finalizeEditJob(){
+    editingJobs.value = false
+  }
+
+  // delete the job associated with the given jobID
+  function deleteJob(jobID){
     // remove job with matching ID
     jobs.value = jobs.value.filter((job) => job['id'] != jobID)
-    // no longer deleting jobs
+  }
+
+  // exit deletingJobs mode
+  function finalizeDeleteJob(){
     deletingJobs.value = false
   }
 
@@ -90,16 +138,22 @@
     <h2>Organize your job applications</h2>
   </header>
   <aside>
-    <button @click="startNewJob()" v-if="!addingJobs">New Job</button>
-    <button @click="startDeleteJob()" v-if="!deletingJobs">Delete Job</button>
+    <div class="function-wrapper" v-if="showFunctions">
+      <button @click="startNewJob()">New Job</button>
+      <button @click="startEditJob()">Edit Job</button>
+      <button @click="startDeleteJob()">Delete Job</button>
+    </div>
+    <button @click="finalizeEditJob()" v-if="editingJobs && !selectedJobID">Done</button>
     <button @click="finalizeDeleteJob()" v-if="deletingJobs">Done</button>
     <form v-if="showInputs">
       <input v-model="tempTitle" placeholder="Title">
       <input v-model="tempCompany" placeholder="Company">
       <input type="date" v-model="tempDate" placeholder="Date Applied">
       <input type="url" v-model="tempURL" placeholder="Link">
-      <button @click="finalizeNewJob()">Add Job</button>
-      <button @click="abortNewJob()">Cancel</button>
+      <button @click="finalizeNewJob()" v-if="addingJobs">Add Job</button>
+      <button @click="abortNewJob()" v-if="addingJobs">Cancel</button>
+      <button @click="editJob()" v-if="editingJobs">Save</button>
+      <button @click="deselectJob()" v-if="editingJobs">Cancel</button>
     </form>
   </aside>
   <main>
@@ -111,18 +165,18 @@
           <th>Company</th>
           <th>Date Applied</th>
           <th>Link</th>
-          <th v-if="deletingJobs">Delete</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="job in jobsDisplayed">
-          <td>{{ job['id'] }}</td>
+          <!--<td>{{ job['id'] }}</td>-->
           <td><img alt="" :src="getFavicon(job['url'])" height="16px" width="16px"></td>
           <td>{{ job['title'] }}</td>
           <td>{{ job['company'] }}</td>
           <td>{{ job['date'] }}</td>
           <td><a :href="job['url']">Visit</a></td>
-          <td v-if="deletingJobs"><button @click="finalizeDeleteJob(job['id'])">X</button></td>
+          <td v-if="editingJobs"><button @click="selectJob(job['id'])">Edit</button></td>
+          <td v-if="deletingJobs"><button @click="deleteJob(job['id'])">Delete</button></td>
         </tr>
       </tbody>
     </table>
