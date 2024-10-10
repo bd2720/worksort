@@ -148,25 +148,25 @@ function getFavicon(url) {
 <template>
   <header>
     <h1>WorkSort</h1>
-    <p>Organize your job applications</p>
+    <p class="subtitle">Organize your job applications</p>
   </header>
   <div class="main-wrapper">
     <main>
       <table>
         <thead>
           <tr>
-            <th>(Icon)</th>
+            <th></th>
             <th>Title</th>
             <th>Company</th>
-            <th>Date Applied</th>
-            <th>Link</th>
+            <th>Date</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="job in jobsDisplayed">
             <!--<td>{{ job['id'] }}</td>-->
             <td>
-              <img alt="" :src="getFavicon(job['url'])" height="16px" width="16px">
+              <img alt="" :src="getFavicon(job['url'])" height="32px" width="32px">
             </td>
             <td>{{ job['title'] }}</td>
             <td>{{ job['company'] }}</td>
@@ -214,57 +214,108 @@ function getFavicon(url) {
 :root {
   --bg-col: #f7f7f7;
   --header-col: #e7e7e7;
+  --table-col: #e7e7e7;
+  --table-alt-col: #d7d7d7;
   --aside-col: #d7d7d7;
   --text-col: #0f0f0f;
+  --subtext-col: #8f8f8f;
   --button-col: #e7e7e7;
   --border-col: #bfbfbf;
-  font-family: sans-serif;
 }
 * {
   padding: 0;
   margin: 0;
+  font-family: sans-serif;
 }
 
 body {
   background-color: var(--bg-col);
   color: var(--text-col);
 }
+
+button {
+  color: var(--subtext-col);
+  padding: 0.2% 1%;
+}
+
 header {
   background: var(--header-col);
   width: calc(100vw - 40px);
   padding: 0 20px;
-  height: 64px;
+  height: 62px;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
   font-size: 24px;
+  border-bottom: 2px solid var(--border-col);
+}
+
+.subtitle {
+  color: var(--subtext-col);
 }
 
 .main-wrapper {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 4fr 1fr;
   height: calc(100vh - 64px);
 }
 
+table {
+  width: calc(100% - 40px);
+  margin: 20px;
+  background: var(--table-col);
+  padding: 8px;
+  border: 2px solid var(--border-col);
+}
 
+thead {
+  transform: translateY(2px);
+}
+
+tr {
+  display: grid;
+  grid-template-columns: 54px 1fr 1fr 120px 64px;
+  height: 50px;
+  vertical-align: bottom;
+}
+
+th, td {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-col);
+}
+
+th {
+  font-size: 140%;
+  background: var(--table-alt-col);
+}
+
+th:nth-child(1), th:nth-child(5) {
+  background: none;
+  border: none;
+}
+
+tr:nth-child(even) {
+  background: var(--table-alt-col);
+}
 
 aside {
   background: var(--aside-col);
+  border-left: 2px solid var(--border-col);
 }
 
 .function-wrapper {
-  height: 60%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-evenly;
-  margin-bottom: 40%;
+  height: (100% - 64px);
+  text-align: center;
+  padding-top: 20px;
 }
 
 .function-wrapper button {
   width: 60%;
-  font-size: 50px;
+  font-size: 32px;
+  margin: 10px;
 }
 
 </style>
