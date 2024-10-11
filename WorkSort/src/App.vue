@@ -225,7 +225,7 @@ function getFavicon(url) {
 * {
   padding: 0;
   margin: 0;
-  font-family: sans-serif;
+  font-family: serif;
 }
 
 body {
@@ -234,6 +234,7 @@ body {
 }
 
 button {
+  font-family: sans-serif;
   color: var(--subtext-col);
   padding: 0.2% 1%;
 }
@@ -290,6 +291,10 @@ th, td {
 th {
   font-size: 140%;
   background: var(--table-alt-col);
+}
+
+td {
+  font-size: 120%;
 }
 
 th:nth-child(1), th:nth-child(5) {
