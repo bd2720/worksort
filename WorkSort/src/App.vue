@@ -59,6 +59,8 @@ function finalizeNewJob() {
     date: tempDate.value,
     url: tempURL.value,
   })
+  // sort new list
+  sortJobs()
   // no longer adding jobs
   addingJobs.value = false
 }
@@ -97,6 +99,8 @@ function editJob() {
   selectedJob.value['company'] = tempCompany.value
   selectedJob.value['date'] = tempDate.value
   selectedJob.value['url'] = tempURL.value
+  // sort updated list
+  sortJobs()
   // deselect the job after updating list
   selectedJobID.value = null
 }
@@ -120,6 +124,32 @@ function deleteJob(jobID) {
 // exit deletingJobs mode
 function finalizeDeleteJob() {
   deletingJobs.value = false
+}
+
+const showExtraJobButtons = computed(() => {
+  return (editingJobs.value && !selectedJobID.value) || deletingJobs.value
+})
+// adds the "tr-extended" class to the table, adding an extra column for Edit/Delete buttons
+const tableClass = computed(() => {
+  return showExtraJobButtons.value ? "tr-extended" : ""
+})
+
+// function by which to sort jobs
+var activeSort = jobComp_earliest
+function sortJobs(){
+  jobs.value.sort(activeSort)
+}
+
+// comparator for sorting job objects by ascending date
+function jobComp_earliest(a, b){
+  const dA = new Date(a['date'])
+  const dB = new Date(b['date'])
+  if(dA < dB){
+    return -1
+  } else if(dA > dB){
+    return 1
+  }
+  return 0
 }
 
 // guess favicon url (https://example.com/xyz/... => https://example.com/favicon.ico)
@@ -154,7 +184,7 @@ function getFavicon(url) {
     <main>
       <table>
         <thead>
-          <tr>
+          <tr :class="tableClass">
             <th></th>
             <th>Title</th>
             <th>Company</th>
@@ -163,10 +193,9 @@ function getFavicon(url) {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="job in jobsDisplayed">
-            <!--<td>{{ job['id'] }}</td>-->
+          <tr v-for="job in jobsDisplayed" :class="tableClass">
             <td>
-              <img alt="" :src="getFavicon(job['url'])" height="32px" width="32px">
+              <img alt="-----" :src="getFavicon(job['url'])" height="32px" width="32px">
             </td>
             <td>{{ job['title'] }}</td>
             <td>{{ job['company'] }}</td>
@@ -190,11 +219,13 @@ function getFavicon(url) {
         <button @click="startEditJob()">Edit Job</button>
         <button @click="startDeleteJob()">Delete Job</button>
       </div>
-      <button @click="finalizeEditJob()" v-if="editingJobs && !selectedJobID">Done</button>
-      <button @click="finalizeDeleteJob()" v-if="deletingJobs">Done</button>
+      <div class="done-wrapper" v-if="showExtraJobButtons">
+        <button @click="finalizeEditJob()" v-if="editingJobs && !selectedJobID">Done</button>
+        <button @click="finalizeDeleteJob()" v-if="deletingJobs">Done</button>
+      </div>
       <form class="input-wrapper" v-if="showInputs">
-        <input v-model="tempTitle" placeholder="Title">
-        <input v-model="tempCompany" placeholder="Company">
+        <input v-model="tempTitle" placeholder="Job Title">
+        <input v-model="tempCompany" placeholder="Company Name">
         <input type="date" v-model="tempDate" placeholder="Date Applied">
         <input type="url" v-model="tempURL" placeholder="Link">
         <div class="input-button-wrapper" v-if="addingJobs">
@@ -215,6 +246,7 @@ function getFavicon(url) {
   --bg-col: #f7f7f7;
   --header-col: #e7e7e7;
   --table-col: #e7e7e7;
+  --table-head-col: #c7c7c7;
   --table-alt-col: #d7d7d7;
   --aside-col: #d7d7d7;
   --text-col: #0f0f0f;
@@ -250,6 +282,11 @@ header {
   align-items: center;
   font-size: 24px;
   border-bottom: 2px solid var(--border-col);
+  white-space: nowrap;
+}
+
+header > * {
+  margin: 0 10px;
 }
 
 .subtitle {
@@ -281,23 +318,31 @@ tr {
   vertical-align: bottom;
 }
 
+/* when Edit/Delete buttons active */
+.tr-extended {
+  grid-template-columns: 54px 1fr 1fr 120px 64px 64px;
+}
+
 th, td {
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border-col);
+
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 th {
   font-size: 140%;
-  background: var(--table-alt-col);
+  background: var(--table-head-col);
 }
 
 td {
   font-size: 120%;
 }
 
-th:nth-child(1), th:nth-child(5) {
+th:nth-child(1), th:nth-child(5), th:nth-child(6) {
   background: none;
   border: none;
 }
@@ -316,11 +361,41 @@ aside {
   text-align: center;
   padding-top: 20px;
 }
-
 .function-wrapper button {
   width: 60%;
   font-size: 32px;
   margin: 10px;
+
+  min-width: 120px;
+}
+
+.done-wrapper {
+  padding-top: 40px;
+  text-align: center;
+}
+.done-wrapper button {
+  font-size: 24px;
+}
+
+.input-wrapper {
+  margin: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-wrapper > * {
+  font-size: 24px;
+}
+
+.input-wrapper button {
+  font-size: 18px;
+}
+
+.input-button-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
 }
 
 </style>
