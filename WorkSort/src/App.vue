@@ -28,6 +28,14 @@ const showFunctions = computed(() => {
   return !addingJobs.value && !editingJobs.value && !deletingJobs.value
 })
 
+const showExtraJobButtons = computed(() => {
+  return (editingJobs.value && !selectedJobID.value) || deletingJobs.value
+})
+// adds the "tr-extended" class to the table, adding an extra column for Edit/Delete buttons
+const tableClass = computed(() => {
+  return showExtraJobButtons.value ? "tr-extended" : ""
+})
+
 const addingJobs = ref(false)
 function startNewJob() {
   clearInputs()
@@ -126,14 +134,6 @@ function finalizeDeleteJob() {
   deletingJobs.value = false
 }
 
-const showExtraJobButtons = computed(() => {
-  return (editingJobs.value && !selectedJobID.value) || deletingJobs.value
-})
-// adds the "tr-extended" class to the table, adding an extra column for Edit/Delete buttons
-const tableClass = computed(() => {
-  return showExtraJobButtons.value ? "tr-extended" : ""
-})
-
 // function by which to sort jobs
 var activeSort = jobComp_earliest
 function sortJobs(){
@@ -173,6 +173,15 @@ function getFavicon(url) {
   return url.slice(0, offset + slashIndex) + '/favicon.ico'
 }
 
+// convert date to mm/dd/yy
+function shortenDate(dateStr){
+  if(!dateStr) return ""
+  const y = dateStr[2] + dateStr[3]
+  const m = dateStr[5] + dateStr[6]
+  const d = dateStr[8] + dateStr[9]
+  return `${m}/${d}/${y}`
+}
+
 </script>
 
 <template>
@@ -199,7 +208,7 @@ function getFavicon(url) {
             </td>
             <td>{{ job['title'] }}</td>
             <td>{{ job['company'] }}</td>
-            <td>{{ job['date'] }}</td>
+            <td>{{ shortenDate(job['date']) }}</td>
             <td>
               <a :href="job['url']">Visit</a>
             </td>
@@ -283,6 +292,7 @@ header {
   font-size: 24px;
   border-bottom: 2px solid var(--border-col);
   white-space: nowrap;
+  overflow: hidden;
 }
 
 header > * {
@@ -313,14 +323,14 @@ thead {
 
 tr {
   display: grid;
-  grid-template-columns: 54px 1fr 1fr 120px 64px;
+  grid-template-columns: 54px 1fr 1fr 82px 64px;
   height: 50px;
   vertical-align: bottom;
 }
 
 /* when Edit/Delete buttons active */
 .tr-extended {
-  grid-template-columns: 54px 1fr 1fr 120px 64px 64px;
+  grid-template-columns: 54px 1fr 1fr 82px 64px 64px;
 }
 
 th, td {
@@ -396,6 +406,45 @@ aside {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
+}
+
+@media(width <= 720px){
+  .main-wrapper {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+  }
+
+  aside {
+    border-left: none;
+    border-bottom: 2px solid var(--border-col);
+  }
+
+  .function-wrapper {
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .function-wrapper button {
+    font-size: 24px;
+    padding: 10px 5px;
+  }
+
+  tr {
+    grid-template-columns: 1fr 1fr 82px 64px;
+  }
+
+  th:first-child, td:first-child {
+    display: none;
+  }
+}
+
+@media(width <= 580px){
+  header p {
+    display: none;
+  }
 }
 
 </style>
