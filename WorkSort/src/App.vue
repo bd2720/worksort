@@ -10,46 +10,50 @@ const tempTitle = ref("")
 const tempCompany = ref("")
 const tempDate = ref("")
 const tempURL = ref("")
+const tempNotes = ref("")
 // clear fields
 function clearInputs() {
   tempTitle.value = ""
   tempCompany.value = ""
   tempDate.value = ""
   tempURL.value = ""
+  tempNotes.value = ""
 }
 
-// show input fields if adding jobs or editing a specific job
+// show input fields if adding jobs
 const showInputs = computed(() => {
-  return addingJobs.value || selectedJobID.value
+  return addingJob.value || editingJob.value
 })
 
 // show functional buttons (Add, Edit, Delete)
 const showFunctions = computed(() => {
-  return !addingJobs.value && !editingJobs.value && !deletingJobs.value
+  return !addingJob.value && !editingJob.value && !selectedJobID.value
 })
 
-const showExtraJobButtons = computed(() => {
-  return (editingJobs.value && !selectedJobID.value) || deletingJobs.value
-})
-// adds the "tr-extended" class to the table, adding an extra column for Edit/Delete buttons
-const tableClass = computed(() => {
-  return showExtraJobButtons.value ? "tr-extended" : ""
+// show extended job info (if a job is selected)
+const showExtendedJob = computed(() => {
+  return selectedJobID.value && !editingJob.value
 })
 
-const addingJobs = ref(false)
+const enlargeAside = computed(() => {
+  return showInputs.value || showExtendedJob.value
+})
+
+const addingJob = ref(false)
 function startNewJob() {
   clearInputs()
-  addingJobs.value = true
+  addingJob.value = true
 }
 
-const editingJobs = ref(false)
+const editingJob = ref(false)
 function startEditJob() {
-  editingJobs.value = true
-}
-
-const deletingJobs = ref(false)
-function startDeleteJob() {
-  deletingJobs.value = true
+  editingJob.value = true
+  // init. fields with specified job information
+  tempTitle.value = selectedJob.value['title']
+  tempCompany.value = selectedJob.value['company']
+  tempDate.value = selectedJob.value['date']
+  tempURL.value = selectedJob.value['url']
+  tempNotes.value = selectedJob.value['notes']
 }
 
 // computes which jobs are currently displayed
@@ -66,15 +70,16 @@ function finalizeNewJob() {
     company: tempCompany.value,
     date: tempDate.value,
     url: tempURL.value,
+    notes: tempNotes.value
   })
   // sort new list
   sortJobs()
-  // no longer adding jobs
-  addingJobs.value = false
+  // no longer adding the job
+  addingJob.value = false
 }
 
 function abortNewJob() {
-  addingJobs.value = false
+  addingJob.value = false
 }
 
 // needed for storing selected job while editing; null means unselected
@@ -90,48 +95,43 @@ const selectedJob = computed(() => {
   }
   return null
 })
-// begin editing job information
+
 function selectJob(jobID) {
   // save the selected job id
   selectedJobID.value = jobID
-  // init. fields with specified job information
-  tempTitle.value = selectedJob.value['title']
-  tempCompany.value = selectedJob.value['company']
-  tempDate.value = selectedJob.value['date']
-  tempURL.value = selectedJob.value['url']
 }
 
-function editJob() {
-  // save new information to the currently selected job
-  selectedJob.value['title'] = tempTitle.value
-  selectedJob.value['company'] = tempCompany.value
-  selectedJob.value['date'] = tempDate.value
-  selectedJob.value['url'] = tempURL.value
-  // sort updated list
-  sortJobs()
-  // deselect the job after updating list
-  selectedJobID.value = null
-}
-
-// when "Cancel" is pressed while editing a specific job
-function deselectJob() {
+function deselectJob(){
+  // set the selected job back to null
   selectedJobID.value = null
 }
 
 // exit editing mode
 function finalizeEditJob() {
-  editingJobs.value = false
+  // save new information to the currently selected job
+  selectedJob.value['title'] = tempTitle.value
+  selectedJob.value['company'] = tempCompany.value
+  selectedJob.value['date'] = tempDate.value
+  selectedJob.value['url'] = tempURL.value
+  selectedJob.value['notes'] = tempNotes.value
+  // sort updated list
+  sortJobs()
+  // done editing
+  editingJob.value = false
 }
 
-// delete the job associated with the given jobID
-function deleteJob(jobID) {
+// when "Cancel" is pressed while editing a specific job
+function abortEdit() {
+  selectedJobID.value = null
+}
+
+
+// delete the job associated with the selectedJobID
+function deleteJob() {
   // remove job with matching ID
-  jobs.value = jobs.value.filter((job) => job['id'] != jobID)
-}
-
-// exit deletingJobs mode
-function finalizeDeleteJob() {
-  deletingJobs.value = false
+  jobs.value = jobs.value.filter((job) => job['id'] != selectedJobID.value)
+  // deselect job, since it no longer exists
+  selectedJobID.value = null
 }
 
 // function by which to sort jobs
@@ -193,7 +193,7 @@ function shortenDate(dateStr){
     <main>
       <table>
         <thead>
-          <tr :class="tableClass">
+          <tr>
             <th></th>
             <th>Title</th>
             <th>Company</th>
@@ -202,7 +202,7 @@ function shortenDate(dateStr){
           </tr>
         </thead>
         <tbody>
-          <tr v-for="job in jobsDisplayed" :class="tableClass">
+          <tr v-for="job in jobsDisplayed">
             <td>
               <img alt="-----" :src="getFavicon(job['url'])" height="32px" width="32px">
             </td>
@@ -210,42 +210,71 @@ function shortenDate(dateStr){
             <td>{{ job['company'] }}</td>
             <td>{{ shortenDate(job['date']) }}</td>
             <td>
-              <a :href="job['url']">Visit</a>
-            </td>
-            <td v-if="editingJobs && !selectedJobID">
-              <button @click="selectJob(job['id'])">Edit</button>
-            </td>
-            <td v-if="deletingJobs">
-              <button @click="deleteJob(job['id'])">Delete</button>
+              <!-- disable view buttons if the aside is in focus -->
+              <button @click="selectJob(job['id'])" :disabled=" enlargeAside ? true : false">View</button>
             </td>
           </tr>
         </tbody>
       </table>
     </main>
-    <aside>
+    <aside :class="enlargeAside ? 'enlargeAside' : ''">
       <div class="function-wrapper" v-if="showFunctions">
         <button @click="startNewJob()">New Job</button>
-        <button @click="startEditJob()">Edit Job</button>
-        <button @click="startDeleteJob()">Delete Job</button>
-      </div>
-      <div class="done-wrapper" v-if="showExtraJobButtons">
-        <button @click="finalizeEditJob()" v-if="editingJobs && !selectedJobID">Done</button>
-        <button @click="finalizeDeleteJob()" v-if="deletingJobs">Done</button>
       </div>
       <form class="input-wrapper" v-if="showInputs">
         <input v-model="tempTitle" placeholder="Job Title">
         <input v-model="tempCompany" placeholder="Company Name">
         <input type="date" v-model="tempDate" placeholder="Date Applied">
         <input type="url" v-model="tempURL" placeholder="Link">
-        <div class="input-button-wrapper" v-if="addingJobs">
+        <input v-model="tempNotes" placeholder="Notes (optional)">
+        <div class="input-button-wrapper" v-if="addingJob">
           <button @click="finalizeNewJob()">Add Job</button>
           <button @click="abortNewJob()">Cancel</button>
         </div>
-        <div class="input-button-wrapper" v-if="editingJobs">
-          <button @click="editJob()">Save</button>
-          <button @click="deselectJob()">Cancel</button>
+        <div class="input-button-wrapper" v-if="editingJob">
+          <button @click="finalizeEditJob()">Save</button>
+          <button @click="abortEdit()">Cancel</button>
         </div>
       </form>
+      <div class="view-wrapper" v-if="showExtendedJob">
+        <div class="info-wrapper">
+          <div class="info-item">
+            <h3>Job Title</h3>
+            <p>
+              {{ selectedJob['title'] }}
+            </p>
+          </div>
+          <div class="info-item">
+            <h3>Company Name</h3>
+            <p>
+              {{ selectedJob['company'] }}
+            </p>
+          </div>
+          <div class="info-item">
+            <h3>Date Applied</h3>
+            <p>
+              {{ selectedJob['date'] }}
+            </p>
+          </div>
+          <div class="info-item">
+            <h3>Link</h3>
+            <p id="info-link">
+              <a :href="selectedJob['url']">{{selectedJob['url']}}</a>
+            </p>
+          </div>
+          <div class="info-item">
+            <h3>Notes</h3>
+            <p id="info-notes">
+              {{selectedJob['notes']}}
+            </p>
+          </div>
+        </div>
+        <div class="info-option-wrapper">
+          <button @click="deselectJob()">Close</button>
+          <button @click="startEditJob()">Edit</button>
+          <button @click="deleteJob()">Delete</button>
+        </div>
+      </div>
     </aside>
   </div>
 </template>
@@ -262,6 +291,7 @@ function shortenDate(dateStr){
   --subtext-col: #8f8f8f;
   --button-col: #e7e7e7;
   --border-col: #bfbfbf;
+  --info-col: #e7e7e7;
 }
 * {
   padding: 0;
@@ -282,12 +312,12 @@ button {
 
 header {
   background: var(--header-col);
-  width: calc(100vw - 40px);
-  padding: 0 20px;
+  width: calc(100vw - 160px);
+  padding: 0 80px;
   height: 62px;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   font-size: 24px;
   border-bottom: 2px solid var(--border-col);
@@ -304,9 +334,14 @@ header > * {
 }
 
 .main-wrapper {
-  display: grid;
-  grid-template-columns: 4fr 1fr;
   height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+main {
+  width: 100%;
 }
 
 table {
@@ -323,24 +358,22 @@ thead {
 
 tr {
   display: grid;
-  grid-template-columns: 54px 1fr 1fr 82px 64px;
+  grid-template-columns: 54px 1fr 1fr 82px 46px;
   height: 50px;
   vertical-align: bottom;
 }
 
-/* when Edit/Delete buttons active */
-.tr-extended {
-  grid-template-columns: 54px 1fr 1fr 82px 64px 64px;
+th, td {
+  border: 1px solid var(--border-col);
+  padding: 12px 0 0 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-th, td {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border-col);
-
-  overflow: hidden;
-  white-space: nowrap;
+td:first-child {
+  padding: 8px 0 0 0;
+  text-align: center;
 }
 
 th {
@@ -362,12 +395,18 @@ tr:nth-child(even) {
 }
 
 aside {
+  width: 200px;
   background: var(--aside-col);
   border-left: 2px solid var(--border-col);
+  flex-shrink: 0;
+}
+
+.enlargeAside {
+  width: 400px;
 }
 
 .function-wrapper {
-  height: (100% - 64px);
+  height: calc(100% - 64px);
   text-align: center;
   padding-top: 20px;
 }
@@ -377,14 +416,6 @@ aside {
   margin: 10px;
 
   min-width: 120px;
-}
-
-.done-wrapper {
-  padding-top: 40px;
-  text-align: center;
-}
-.done-wrapper button {
-  font-size: 24px;
 }
 
 .input-wrapper {
@@ -408,14 +439,68 @@ aside {
   justify-content: space-evenly;
 }
 
+.view-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.info-item {
+  padding: 4px 0;
+}
+
+.info-item h3 {
+  padding-left: 2px;
+}
+
+.info-item p {
+  min-height: 28px;
+  width: 300px;
+  font-size: 24px;
+  background: var(--info-col);
+  border: 1px solid var(--border-col); 
+  margin-top: 4px;
+  padding: 1px 4px;
+}
+
+/* display link, wrap if necessary */
+#info-link {
+  word-wrap: break-word;
+}
+
+/* make notes field display taller */
+#info-notes {
+  min-height: 84px;
+}
+
+.view-wrapper button {
+  font-size: 18px;
+}
+
+.info-option-wrapper {
+  width: 300px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin: 10px 0;
+}
+
+/* display aside on top of main, for mobile */
 @media(width <= 720px){
+  header {
+    justify-content: center;
+  }
+  header p {
+    display: none;
+  }
+
   .main-wrapper {
-    display: flex;
     flex-direction: column-reverse;
     justify-content: flex-end;
   }
 
   aside {
+    width: 100% !important;
     border-left: none;
     border-bottom: 2px solid var(--border-col);
   }
@@ -432,17 +517,12 @@ aside {
     padding: 10px 5px;
   }
 
+  /* hide icon */
   tr {
-    grid-template-columns: 1fr 1fr 82px 64px;
+    grid-template-columns: 1fr 1fr 82px 46px;
   }
 
   th:first-child, td:first-child {
-    display: none;
-  }
-}
-
-@media(width <= 580px){
-  header p {
     display: none;
   }
 }
