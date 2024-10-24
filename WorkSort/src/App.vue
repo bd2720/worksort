@@ -122,7 +122,7 @@ function finalizeEditJob() {
 
 // when "Cancel" is pressed while editing a specific job
 function abortEdit() {
-  selectedJobID.value = null
+  editingJob.value = false
 }
 
 
@@ -154,6 +154,7 @@ function jobComp_earliest(a, b){
 
 // guess favicon url (https://example.com/xyz/... => https://example.com/favicon.ico)
 function getFavicon(url) {
+  if(!url) return '#'
   // search for first '/' after '//'
   let offset = 0
   let shortUrl = url
@@ -334,7 +335,8 @@ header > * {
 }
 
 .main-wrapper {
-  height: calc(100vh - 64px);
+  /* ensure content (aside) extends at least to the screen bottom */
+  min-height: calc(100vh - 64px);
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -471,6 +473,7 @@ aside {
 /* make notes field display taller */
 #info-notes {
   min-height: 84px;
+  word-wrap: break-word;
 }
 
 .view-wrapper button {
