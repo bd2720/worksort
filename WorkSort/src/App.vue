@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import JobTable from './Components/JobTable.vue'
+import JobView from './Components/JobView.vue'
 // JSON array of job objects
 const jobs = ref([])
 // begin jobIDs at 1
@@ -139,7 +140,6 @@ function jobComp_earliest(a, b){
   }
   return 0
 }
-
 </script>
 
 <template>
@@ -171,43 +171,7 @@ function jobComp_earliest(a, b){
         </div>
       </form>
       <div class="view-wrapper" v-if="showExtendedJob">
-        <div class="info-wrapper">
-          <div class="info-item">
-            <h3>Job Title</h3>
-            <p>
-              {{ selectedJob['title'] }}
-            </p>
-          </div>
-          <div class="info-item">
-            <h3>Company Name</h3>
-            <p>
-              {{ selectedJob['company'] }}
-            </p>
-          </div>
-          <div class="info-item">
-            <h3>Date Applied</h3>
-            <p>
-              {{ selectedJob['date'] }}
-            </p>
-          </div>
-          <div class="info-item">
-            <h3>Link</h3>
-            <p id="info-link">
-              <a :href="selectedJob['url']">{{selectedJob['url']}}</a>
-            </p>
-          </div>
-          <div class="info-item">
-            <h3>Notes</h3>
-            <p id="info-notes">
-              {{selectedJob['notes']}}
-            </p>
-          </div>
-        </div>
-        <div class="info-option-wrapper">
-          <button @click="deselectJob()">Close</button>
-          <button @click="startEditJob()">Edit</button>
-          <button @click="deleteJob()">Delete</button>
-        </div>
+        <JobView :selectedJob="selectedJob" @job-deselect="deselectJob" @job-edit="startEditJob" @job-delete="deleteJob"/>
       </div>
     </aside>
   </div>
@@ -217,15 +181,11 @@ function jobComp_earliest(a, b){
 :root {
   --bg-col: #f7f7f7;
   --header-col: #e7e7e7;
-  --table-col: #e7e7e7;
-  --table-head-col: #c7c7c7;
-  --table-alt-col: #d7d7d7;
   --aside-col: #d7d7d7;
   --text-col: #0f0f0f;
   --subtext-col: #8f8f8f;
   --button-col: #e7e7e7;
   --border-col: #bfbfbf;
-  --info-col: #e7e7e7;
 }
 * {
   padding: 0;
@@ -328,47 +288,6 @@ aside {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.info-item {
-  padding: 4px 0;
-}
-
-.info-item h3 {
-  padding-left: 2px;
-}
-
-.info-item p {
-  min-height: 28px;
-  width: 300px;
-  font-size: 24px;
-  background: var(--info-col);
-  border: 1px solid var(--border-col); 
-  margin-top: 4px;
-  padding: 1px 4px;
-}
-
-/* display link, wrap if necessary */
-#info-link {
-  word-wrap: break-word;
-}
-
-/* make notes field display taller */
-#info-notes {
-  min-height: 84px;
-  word-wrap: break-word;
-}
-
-.view-wrapper button {
-  font-size: 18px;
-}
-
-.info-option-wrapper {
-  width: 300px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  margin: 10px 0;
 }
 
 /* display aside on top of main, for mobile */

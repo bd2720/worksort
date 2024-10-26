@@ -1,5 +1,4 @@
 <script setup>
-
 const props = defineProps({
   jobs: Array,
   enlargeAside: Boolean
@@ -40,40 +39,59 @@ function shortenDate(dateStr){
 </script>
 
 <template>
-  <table>
-    <thead>
-      <tr>
-        <th></th>
-        <th>Title</th>
-        <th>Company</th>
-        <th>Date</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="job in jobs">
-        <td>
-          <img alt="-----" :src="getFavicon(job['url'])" height="32px" width="32px">
-        </td>
-        <td>{{ job['title'] }}</td>
-        <td>{{ job['company'] }}</td>
-        <td>{{ shortenDate(job['date']) }}</td>
-        <td>
-          <!-- disable view buttons if the aside is in focus -->
-          <button @click="emit('job_select', job['id'])" :disabled="enlargeAside">View</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div id="table-wrapper">
+    <table v-if="jobs.length">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Title</th>
+          <th>Company</th>
+          <th>Date</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="job in jobs">
+          <td>
+            <img alt="-----" :src="getFavicon(job['url'])" height="32px" width="32px">
+          </td>
+          <td>{{ job['title'] }}</td>
+          <td>{{ job['company'] }}</td>
+          <td>{{ shortenDate(job['date']) }}</td>
+          <td>
+            <!-- disable view buttons if the aside is in focus -->
+            <button @click="emit('job_select', job['id'])" :disabled="enlargeAside">View</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p v-else id="no-jobs">
+      You haven't added any jobs yet. Click <strong>New Job</strong> to start organizing!
+    </p>
+  </div>
 </template>
 
-<style>
-table {
-  width: calc(100% - 40px);
+<style scoped>
+#table-wrapper {
+  --table-col: #e7e7e7;
+  --table-head-col: #c7c7c7;
+  --table-alt-col: #d7d7d7;
+
+  display: flex;
+  justify-content: center;
+  width: calc(100% - 60px);
   margin: 20px;
   background: var(--table-col);
   padding: 8px;
   border: 2px solid var(--border-col);
+}
+
+p {
+  font-size: 24px;
+}
+
+table {
+  width: 100%;
 }
 
 thead {
