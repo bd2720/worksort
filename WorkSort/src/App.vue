@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
+import JobTable from './Components/JobTable.vue'
 // JSON array of job objects
 const jobs = ref([])
 // begin jobIDs at 1
@@ -24,17 +25,15 @@ function clearInputs() {
 const showInputs = computed(() => {
   return addingJob.value || editingJob.value
 })
-
 // show functional buttons (Add, Edit, Delete)
 const showFunctions = computed(() => {
   return !addingJob.value && !editingJob.value && !selectedJobID.value
 })
-
 // show extended job info (if a job is selected)
 const showExtendedJob = computed(() => {
   return selectedJobID.value && !editingJob.value
 })
-
+// enlarge the aside if sub-menus are active
 const enlargeAside = computed(() => {
   return showInputs.value || showExtendedJob.value
 })
@@ -55,11 +54,6 @@ function startEditJob() {
   tempURL.value = selectedJob.value['url']
   tempNotes.value = selectedJob.value['notes']
 }
-
-// computes which jobs are currently displayed
-const jobsDisplayed = computed(() => {
-  return jobs.value
-})
 
 // add filled-out job object to jobs
 function finalizeNewJob() {
@@ -82,18 +76,13 @@ function abortNewJob() {
   addingJob.value = false
 }
 
-// needed for storing selected job while editing; null means unselected
-const selectedJobID = ref(null)
+// needed for storing selected job while editing; undefined means unselected
+const selectedJobID = ref(undefined)
 // reference to the selected job object
 const selectedJob = computed(() => {
-  if (!selectedJobID.value) return null
-  // sequentially search for job object in jobs array
-  for (const job of jobs.value) {
-    if (job['id'] == selectedJobID.value) {
-      return job
-    }
-  }
-  return null
+  if (!selectedJobID.value) return undefined
+  // search for job object in jobs array
+  return jobs.value.find((job) => job['id'] === selectedJobID.value)
 })
 
 function selectJob(jobID) {
@@ -102,8 +91,8 @@ function selectJob(jobID) {
 }
 
 function deselectJob(){
-  // set the selected job back to null
-  selectedJobID.value = null
+  // set the selected job back to undefined
+  selectedJobID.value = undefined
 }
 
 // exit editing mode
@@ -125,13 +114,12 @@ function abortEdit() {
   editingJob.value = false
 }
 
-
 // delete the job associated with the selectedJobID
 function deleteJob() {
   // remove job with matching ID
   jobs.value = jobs.value.filter((job) => job['id'] != selectedJobID.value)
   // deselect job, since it no longer exists
-  selectedJobID.value = null
+  selectedJobID.value = undefined
 }
 
 // function by which to sort jobs
@@ -152,37 +140,6 @@ function jobComp_earliest(a, b){
   return 0
 }
 
-// guess favicon url (https://example.com/xyz/... => https://example.com/favicon.ico)
-function getFavicon(url) {
-  if(!url) return '#'
-  // search for first '/' after '//'
-  let offset = 0
-  let shortUrl = url
-  if (url.indexOf('http') == 0) {
-    if (url[4] == 's') { // https
-      shortUrl = url.slice(8)
-      offset = 8
-    } else { // http
-      shortUrl = url.slice(7)
-      offset = 7
-    }
-  }
-  const slashIndex = shortUrl.indexOf('/')
-  if (slashIndex == -1) {
-    return url + '/favicon.ico'
-  }
-  return url.slice(0, offset + slashIndex) + '/favicon.ico'
-}
-
-// convert date to mm/dd/yy
-function shortenDate(dateStr){
-  if(!dateStr) return ""
-  const y = dateStr[2] + dateStr[3]
-  const m = dateStr[5] + dateStr[6]
-  const d = dateStr[8] + dateStr[9]
-  return `${m}/${d}/${y}`
-}
-
 </script>
 
 <template>
@@ -192,31 +149,7 @@ function shortenDate(dateStr){
   </header>
   <div class="main-wrapper">
     <main>
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>Title</th>
-            <th>Company</th>
-            <th>Date</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="job in jobsDisplayed">
-            <td>
-              <img alt="-----" :src="getFavicon(job['url'])" height="32px" width="32px">
-            </td>
-            <td>{{ job['title'] }}</td>
-            <td>{{ job['company'] }}</td>
-            <td>{{ shortenDate(job['date']) }}</td>
-            <td>
-              <!-- disable view buttons if the aside is in focus -->
-              <button @click="selectJob(job['id'])" :disabled=" enlargeAside ? true : false">View</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <JobTable :jobs="jobs" :enlargeAside="enlargeAside" @job_select="selectJob"/>
     </main>
     <aside :class="enlargeAside ? 'enlargeAside' : ''">
       <div class="function-wrapper" v-if="showFunctions">
@@ -346,56 +279,6 @@ main {
   width: 100%;
 }
 
-table {
-  width: calc(100% - 40px);
-  margin: 20px;
-  background: var(--table-col);
-  padding: 8px;
-  border: 2px solid var(--border-col);
-}
-
-thead {
-  transform: translateY(2px);
-}
-
-tr {
-  display: grid;
-  grid-template-columns: 54px 1fr 1fr 82px 46px;
-  height: 50px;
-  vertical-align: bottom;
-}
-
-th, td {
-  border: 1px solid var(--border-col);
-  padding: 12px 0 0 6px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-td:first-child {
-  padding: 8px 0 0 0;
-  text-align: center;
-}
-
-th {
-  font-size: 140%;
-  background: var(--table-head-col);
-}
-
-td {
-  font-size: 120%;
-}
-
-th:nth-child(1), th:nth-child(5), th:nth-child(6) {
-  background: none;
-  border: none;
-}
-
-tr:nth-child(even) {
-  background: var(--table-alt-col);
-}
-
 aside {
   width: 200px;
   background: var(--aside-col);
@@ -519,15 +402,5 @@ aside {
     font-size: 24px;
     padding: 10px 5px;
   }
-
-  /* hide icon */
-  tr {
-    grid-template-columns: 1fr 1fr 82px 46px;
-  }
-
-  th:first-child, td:first-child {
-    display: none;
-  }
 }
-
 </style>

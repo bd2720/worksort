@@ -10,6 +10,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "dexie": "^4.0.9",
     "vue": "^3.4.29"
   },
   "devDependencies": {
