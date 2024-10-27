@@ -6,7 +6,7 @@ export const db = new Dexie('jobData')
 // create jobs table
 db.version(1).stores({
   // id is (unique) primary key
-  jobs: '&id, title, company, date',
+  jobs: '++id, title, company, date',
   // store for metadata (nextID)
   meta: '&key'
 })

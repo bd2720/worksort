@@ -2,6 +2,9 @@
 import { ref, computed } from 'vue'
 import JobTable from './Components/JobTable.vue'
 import JobView from './Components/JobView.vue'
+import JobAdd from './Components/JobAdd.vue'
+import JobEdit from './Components/JobEdit.vue'
+import JobDelete from './Components/JobDelete.vue'
 // JSON array of job objects
 const jobs = ref([])
 // begin jobIDs at 1
@@ -26,17 +29,17 @@ function clearInputs() {
 const showInputs = computed(() => {
   return addingJob.value || editingJob.value
 })
-// show functional buttons (Add, Edit, Delete)
+// show functional buttons (Add)
 const showFunctions = computed(() => {
-  return !addingJob.value && !editingJob.value && !selectedJobID.value
+  return !addingJob.value && !editingJob.value && !jobSelected.value
 })
 // show extended job info (if a job is selected)
 const showExtendedJob = computed(() => {
-  return selectedJobID.value && !editingJob.value
+  return jobSelected.value && !editingJob.value
 })
 // enlarge the aside if sub-menus are active
 const enlargeAside = computed(() => {
-  return showInputs.value || showExtendedJob.value
+  return addingJob.value || jobSelected.value
 })
 
 const addingJob = ref(false)
@@ -56,6 +59,8 @@ function startEditJob() {
   tempNotes.value = selectedJob.value['notes']
 }
 
+const deletingJob = ref(false)
+
 // add filled-out job object to jobs
 function finalizeNewJob() {
   // add new job object
@@ -67,8 +72,6 @@ function finalizeNewJob() {
     url: tempURL.value,
     notes: tempNotes.value
   })
-  // sort new list
-  sortJobs()
   // no longer adding the job
   addingJob.value = false
 }
@@ -77,23 +80,18 @@ function abortNewJob() {
   addingJob.value = false
 }
 
-// needed for storing selected job while editing; undefined means unselected
-const selectedJobID = ref(undefined)
 // reference to the selected job object
-const selectedJob = computed(() => {
-  if (!selectedJobID.value) return undefined
-  // search for job object in jobs array
-  return jobs.value.find((job) => job['id'] === selectedJobID.value)
-})
+const selectedJob = ref(undefined)
+const jobSelected = computed(() => Boolean(selectedJob.value))
 
-function selectJob(jobID) {
-  // save the selected job id
-  selectedJobID.value = jobID
+function selectJob(job) {
+  // save the selected job
+  selectedJob.value = job
 }
 
 function deselectJob(){
   // set the selected job back to undefined
-  selectedJobID.value = undefined
+  selectedJob.value = undefined
 }
 
 // exit editing mode
@@ -104,8 +102,6 @@ function finalizeEditJob() {
   selectedJob.value['date'] = tempDate.value
   selectedJob.value['url'] = tempURL.value
   selectedJob.value['notes'] = tempNotes.value
-  // sort updated list
-  sortJobs()
   // done editing
   editingJob.value = false
 }
@@ -115,31 +111,16 @@ function abortEdit() {
   editingJob.value = false
 }
 
-// delete the job associated with the selectedJobID
+// delete selectedJob from the list
 function deleteJob() {
+  deletingJob.value = true
   // remove job with matching ID
-  jobs.value = jobs.value.filter((job) => job['id'] != selectedJobID.value)
+  jobs.value = jobs.value.filter((job) => job['id'] != selectedJob.value['id'])
+  deletingJob.value = false
   // deselect job, since it no longer exists
-  selectedJobID.value = undefined
+  selectedJob.value = undefined
 }
 
-// function by which to sort jobs
-var activeSort = jobComp_earliest
-function sortJobs(){
-  jobs.value.sort(activeSort)
-}
-
-// comparator for sorting job objects by ascending date
-function jobComp_earliest(a, b){
-  const dA = new Date(a['date'])
-  const dB = new Date(b['date'])
-  if(dA < dB){
-    return -1
-  } else if(dA > dB){
-    return 1
-  }
-  return 0
-}
 </script>
 
 <template>
@@ -170,8 +151,17 @@ function jobComp_earliest(a, b){
           <button @click="abortEdit()">Cancel</button>
         </div>
       </form>
+      <div class="add-wrapper" v-if="addingJob">
+        <JobAdd :nextID="nextID" @job_add="addingJob = false" @cancel_add="addingJob = false"/>
+      </div>
       <div class="view-wrapper" v-if="showExtendedJob">
-        <JobView :selectedJob="selectedJob" @job-deselect="deselectJob" @job-edit="startEditJob" @job-delete="deleteJob"/>
+        <JobView :selectedJob="selectedJob" @job_deselect="deselectJob" @job_edit="startEditJob" @job_delete="deleteJob"/>
+      </div>
+      <div class="edit-wrapper" v-if="editingJob">
+        <JobEdit :selectedJob="selectedJob" @job_edit="editingJob = false" @cancel_edit="editingJob = false"/>
+      </div>
+      <div class="delete-wrapper" v-if="deletingJob">
+        <JobDelete :selectedJob="selectedJob" @job_delete="deletingJob = false; deselectJob()"/>
       </div>
     </aside>
   </div>

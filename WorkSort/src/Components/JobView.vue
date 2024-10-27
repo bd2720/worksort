@@ -1,13 +1,12 @@
 <script setup>
-// should be temporary, will later use find(id) from dbUtil.js
 const props = defineProps({
   selectedJob: Object
 })
 
 const emit = defineEmits([
-  'job-deselect',
-  'job-edit',
-  'job-delete'
+  'job_deselect',
+  'job_edit',
+  'job_delete'
 ])
 </script>
 
@@ -45,9 +44,9 @@ const emit = defineEmits([
     </div>
   </div>
   <div class="info-option-wrapper">
-    <button @click="emit('job-deselect')">Close</button>
-    <button @click="emit('job-edit')">Edit</button>
-    <button @click="emit('job-delete')">Delete</button>
+    <button @click="emit('job_deselect')">Close</button>
+    <button @click="emit('job_edit')">Edit</button>
+    <button @click="emit('job_delete')">Delete</button>
   </div>
 </template>
 

@@ -60,12 +60,12 @@ function shortenDate(dateStr){
           <td>{{ shortenDate(job['date']) }}</td>
           <td>
             <!-- disable view buttons if the aside is in focus -->
-            <button @click="emit('job_select', job['id'])" :disabled="enlargeAside">View</button>
+            <button @click="emit('job_select', job)" :disabled="enlargeAside">View</button>
           </td>
         </tr>
       </tbody>
     </table>
-    <p v-else id="no-jobs">
+    <p v-else>
       You haven't added any jobs yet. Click <strong>New Job</strong> to start organizing!
     </p>
   </div>
