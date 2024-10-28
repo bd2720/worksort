@@ -30,7 +30,7 @@ function editJob() {
   }
   // save new job info to db
   db_update(editedJob)
-  emit('job_edit')
+  emit('job_edit', editedJob)
 }
 
 function cancelEdit() {

@@ -8,7 +8,7 @@ Streamline the application process using WorkSort -- a job posting organizer. Wo
 * Click a job's `View` button to view, edit or delete the information associated with that particular job listing.
 ## Coming Soon
 
-* Categories (Default and Custom)
 * ~~Style~~
 * ~~Notes field for each job listing~~
-* Saved history
+* ~~Saved history~~
+* Categories (Default and Custom)

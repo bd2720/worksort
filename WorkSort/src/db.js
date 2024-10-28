@@ -11,8 +11,8 @@ db.version(1).stores({
 })
 
 db.open()
-.then((msg) => {
-  console.log('dbUtil.js: DB opened successfully --' + msg)
+.then(() => {
+  console.log('dbUtil.js: DB opened successfully.')
 }).catch((err) => {
   console.error('dbUtil.js: Failed to open DB -- ' + err)
 })
