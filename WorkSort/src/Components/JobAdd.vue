@@ -1,9 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-
-const props = defineProps({
-  nextID: Number
-})
+import { db_insert } from '../dbUtil'
 
 const emit = defineEmits([
   'job_add',
@@ -19,7 +16,6 @@ const tempNotes = ref("")
 
 function addJob() {
   const newJob = {
-    id: props.nextID,
     title: tempTitle.value,
     company: tempCompany.value,
     date: tempDate.value,
@@ -27,6 +23,7 @@ function addJob() {
     notes: tempNotes.value
   }
   // insert into DB
+  db_insert(newJob)
   emit('job_add')
 }
 

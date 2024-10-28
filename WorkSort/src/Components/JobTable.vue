@@ -1,10 +1,13 @@
 <script setup>
+import { db_query } from '../dbUtil'
+
 const props = defineProps({
-  jobs: Array,
   enlargeAside: Boolean
 })
 
 const emit = defineEmits(['job_select'])
+
+const jobs = db_query()
 
 // guess favicon url (https://example.com/xyz/... => https://example.com/favicon.ico)
 function getFavicon(url) {
@@ -40,7 +43,7 @@ function shortenDate(dateStr){
 
 <template>
   <div id="table-wrapper">
-    <table v-if="jobs.length">
+    <table v-if="jobs && jobs.length">
       <thead>
         <tr>
           <th></th>

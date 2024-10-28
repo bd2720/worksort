@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { db_update } from '../dbUtil'
 
 const props = defineProps({
   selectedJob: Object
@@ -16,10 +17,19 @@ const tempTitle = ref(props.selectedJob['title'])
 const tempCompany = ref(props.selectedJob['company'])
 const tempDate = ref(props.selectedJob['date'])
 const tempURL = ref(props.selectedJob['url'])
-const tempNotes = ref(props.selectedJob['tempNotes'])
+const tempNotes = ref(props.selectedJob['notes'])
 
 function editJob() {
+  const editedJob = {
+    id: props.selectedJob['id'],
+    title: tempTitle.value,
+    company: tempCompany.value,
+    date: tempDate.value,
+    url: tempURL.value,
+    notes: tempNotes.value
+  }
   // save new job info to db
+  db_update(editedJob)
   emit('job_edit')
 }
 

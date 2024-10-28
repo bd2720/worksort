@@ -1,20 +1,18 @@
 // using Dexie, a wrapper for Indexed DB
 import Dexie from 'dexie'
 
-export const db = new Dexie('jobData')
+const db = new Dexie('jobData')
+export default db
 
 // create jobs table
 db.version(1).stores({
-  // id is (unique) primary key
+  // id is (auto-incrementing) primary key
   jobs: '++id, title, company, date',
-  // store for metadata (nextID)
-  meta: '&key'
 })
 
-// initialize nextID
-db.meta.put({
-  key: 'nextID',
-  value: 1
-}).catch((error) => {
-  // nextID already exists
+db.open()
+.then((msg) => {
+  console.log('dbUtil.js: DB opened successfully --' + msg)
+}).catch((err) => {
+  console.error('dbUtil.js: Failed to open DB -- ' + err)
 })

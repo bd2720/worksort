@@ -5,30 +5,8 @@ import JobView from './Components/JobView.vue'
 import JobAdd from './Components/JobAdd.vue'
 import JobEdit from './Components/JobEdit.vue'
 import JobDelete from './Components/JobDelete.vue'
-// JSON array of job objects
-const jobs = ref([])
-// begin jobIDs at 1
-const nextID = ref(1)
 
-// input variables
-const tempTitle = ref("")
-const tempCompany = ref("")
-const tempDate = ref("")
-const tempURL = ref("")
-const tempNotes = ref("")
-// clear fields
-function clearInputs() {
-  tempTitle.value = ""
-  tempCompany.value = ""
-  tempDate.value = ""
-  tempURL.value = ""
-  tempNotes.value = ""
-}
 
-// show input fields if adding jobs
-const showInputs = computed(() => {
-  return addingJob.value || editingJob.value
-})
 // show functional buttons (Add)
 const showFunctions = computed(() => {
   return !addingJob.value && !editingJob.value && !jobSelected.value
@@ -44,41 +22,15 @@ const enlargeAside = computed(() => {
 
 const addingJob = ref(false)
 function startNewJob() {
-  clearInputs()
   addingJob.value = true
 }
 
 const editingJob = ref(false)
 function startEditJob() {
   editingJob.value = true
-  // init. fields with specified job information
-  tempTitle.value = selectedJob.value['title']
-  tempCompany.value = selectedJob.value['company']
-  tempDate.value = selectedJob.value['date']
-  tempURL.value = selectedJob.value['url']
-  tempNotes.value = selectedJob.value['notes']
 }
 
 const deletingJob = ref(false)
-
-// add filled-out job object to jobs
-function finalizeNewJob() {
-  // add new job object
-  jobs.value.push({
-    id: nextID.value++,
-    title: tempTitle.value,
-    company: tempCompany.value,
-    date: tempDate.value,
-    url: tempURL.value,
-    notes: tempNotes.value
-  })
-  // no longer adding the job
-  addingJob.value = false
-}
-
-function abortNewJob() {
-  addingJob.value = false
-}
 
 // reference to the selected job object
 const selectedJob = ref(undefined)
@@ -88,37 +40,13 @@ function selectJob(job) {
   // save the selected job
   selectedJob.value = job
 }
-
 function deselectJob(){
   // set the selected job back to undefined
   selectedJob.value = undefined
 }
-
-// exit editing mode
-function finalizeEditJob() {
-  // save new information to the currently selected job
-  selectedJob.value['title'] = tempTitle.value
-  selectedJob.value['company'] = tempCompany.value
-  selectedJob.value['date'] = tempDate.value
-  selectedJob.value['url'] = tempURL.value
-  selectedJob.value['notes'] = tempNotes.value
-  // done editing
-  editingJob.value = false
-}
-
-// when "Cancel" is pressed while editing a specific job
-function abortEdit() {
-  editingJob.value = false
-}
-
 // delete selectedJob from the list
 function deleteJob() {
   deletingJob.value = true
-  // remove job with matching ID
-  jobs.value = jobs.value.filter((job) => job['id'] != selectedJob.value['id'])
-  deletingJob.value = false
-  // deselect job, since it no longer exists
-  selectedJob.value = undefined
 }
 
 </script>
@@ -130,29 +58,14 @@ function deleteJob() {
   </header>
   <div class="main-wrapper">
     <main>
-      <JobTable :jobs="jobs" :enlargeAside="enlargeAside" @job_select="selectJob"/>
+      <JobTable :enlargeAside="enlargeAside" @job_select="selectJob"/>
     </main>
     <aside :class="enlargeAside ? 'enlargeAside' : ''">
       <div class="function-wrapper" v-if="showFunctions">
         <button @click="startNewJob()">New Job</button>
       </div>
-      <form class="input-wrapper" v-if="showInputs">
-        <input v-model="tempTitle" placeholder="Job Title">
-        <input v-model="tempCompany" placeholder="Company Name">
-        <input type="date" v-model="tempDate" placeholder="Date Applied">
-        <input type="url" v-model="tempURL" placeholder="Link">
-        <input v-model="tempNotes" placeholder="Notes (optional)">
-        <div class="input-button-wrapper" v-if="addingJob">
-          <button @click="finalizeNewJob()">Add Job</button>
-          <button @click="abortNewJob()">Cancel</button>
-        </div>
-        <div class="input-button-wrapper" v-if="editingJob">
-          <button @click="finalizeEditJob()">Save</button>
-          <button @click="abortEdit()">Cancel</button>
-        </div>
-      </form>
       <div class="add-wrapper" v-if="addingJob">
-        <JobAdd :nextID="nextID" @job_add="addingJob = false" @cancel_add="addingJob = false"/>
+        <JobAdd @job_add="addingJob = false" @cancel_add="addingJob = false"/>
       </div>
       <div class="view-wrapper" v-if="showExtendedJob">
         <JobView :selectedJob="selectedJob" @job_deselect="deselectJob" @job_edit="startEditJob" @job_delete="deleteJob"/>
