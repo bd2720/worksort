@@ -15,10 +15,11 @@ const tempURL = ref("")
 const tempNotes = ref("")
 
 function addJob() {
+  const inputDate = new Date(tempDate.value)
   const newJob = {
     title: tempTitle.value,
     company: tempCompany.value,
-    date: tempDate.value,
+    date: inputDate,
     url: tempURL.value,
     notes: tempNotes.value
   }

@@ -1,44 +1,14 @@
 <script setup>
 import { db_query } from '../dbUtil'
+import { dateToShortStr, getFavicon } from '../util'
 
 const props = defineProps({
   enlargeAside: Boolean
 })
 
 const emit = defineEmits(['job_select'])
-
+// table of jobs, reactive from Dexie's liveQuery()
 const jobs = db_query()
-
-// guess favicon url (https://example.com/xyz/... => https://example.com/favicon.ico)
-function getFavicon(url) {
-  if(!url) return '#'
-  // search for first '/' after '//'
-  let offset = 0
-  let shortUrl = url
-  if (url.indexOf('http') == 0) {
-    if (url[4] == 's') { // https
-      shortUrl = url.slice(8)
-      offset = 8
-    } else { // http
-      shortUrl = url.slice(7)
-      offset = 7
-    }
-  }
-  const slashIndex = shortUrl.indexOf('/')
-  if (slashIndex == -1) {
-    return url + '/favicon.ico'
-  }
-  return url.slice(0, offset + slashIndex) + '/favicon.ico'
-}
-
-// convert date to mm/dd/yy
-function shortenDate(dateStr){
-  if(!dateStr) return ""
-  const y = dateStr[2] + dateStr[3]
-  const m = dateStr[5] + dateStr[6]
-  const d = dateStr[8] + dateStr[9]
-  return `${m}/${d}/${y}`
-}
 </script>
 
 <template>
@@ -60,7 +30,7 @@ function shortenDate(dateStr){
           </td>
           <td>{{ job['title'] }}</td>
           <td>{{ job['company'] }}</td>
-          <td>{{ shortenDate(job['date']) }}</td>
+          <td>{{ dateToShortStr(job['date']) }}</td>
           <td>
             <!-- disable view buttons if the aside is in focus -->
             <button @click="emit('job_select', job)" :disabled="enlargeAside">View</button>

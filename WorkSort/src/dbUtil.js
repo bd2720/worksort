@@ -18,8 +18,7 @@ export function db_update(jobWithID) {
   .catch((err) => console.error('dbUtil.js: Failed to edit job -- ' + err))
 }
 
-// delete a job from the database
-// job 
+// delete job with the given ID from the database
 export function db_delete(jobID) {
   db.jobs.delete(jobID)
   .then(() => console.log(`dbUtil.js: Job deleted successfully (id = ${jobID})`))
@@ -31,7 +30,9 @@ export function db_query() {
   return useObservable(
     liveQuery(
       async () => {
-        return await db.jobs.toArray()
+        return await db.jobs
+        .orderBy('date')
+        .toArray()
       }
     )
   )

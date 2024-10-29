@@ -1,4 +1,6 @@
 <script setup>
+import { dateToStr } from '../util'
+
 const props = defineProps({
   selectedJob: Object
 })
@@ -27,7 +29,7 @@ const emit = defineEmits([
     <div class="info-item">
       <h3>Date Applied</h3>
       <p>
-        {{ selectedJob['date'] }}
+        {{ dateToStr(selectedJob['date']) }}
       </p>
     </div>
     <div class="info-item">

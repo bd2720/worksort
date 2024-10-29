@@ -34,7 +34,7 @@ const enlargeAside = computed(() => {
   </header>
   <div class="main-wrapper">
     <main>
-      <JobTable :enlargeAside="enlargeAside" @job_select="(job) => { selectedJob = job}"/>
+      <JobTable :enlargeAside="enlargeAside" @job_select="(job) => { selectedJob = job }"/>
     </main>
     <aside :class="enlargeAside ? 'enlargeAside' : ''">
       <div class="function-wrapper" v-if="showFunctions">
@@ -47,10 +47,10 @@ const enlargeAside = computed(() => {
         <JobView :selectedJob="selectedJob" @job_deselect="selectedJob = undefined" @job_edit="editingJob = true" @job_delete="deletingJob = true"/>
       </div>
       <div class="edit-wrapper" v-if="editingJob">
-        <JobEdit :selectedJob="selectedJob" @job_edit="(job) => { editingJob = false; selectedJob = job}" @cancel_edit="editingJob = false"/>
+        <JobEdit :selectedJob="selectedJob" @job_edit="(job) => { editingJob = false; selectedJob = job }" @cancel_edit="editingJob = false"/>
       </div>
       <div class="delete-wrapper" v-if="deletingJob">
-        <JobDelete :selectedJob="selectedJob" @job_delete="deletingJob = false; selectedJob = undefined"/>
+        <JobDelete :selectedJobID="selectedJob['id']" @job_delete="deletingJob = false; selectedJob = undefined"/>
       </div>
     </aside>
   </div>

@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { db_update } from '../dbUtil'
+import { dateToStr } from '../util'
 
 const props = defineProps({
   selectedJob: Object
@@ -15,7 +16,7 @@ const emit = defineEmits([
 component will only be created after a job is selected */
 const tempTitle = ref(props.selectedJob['title'])
 const tempCompany = ref(props.selectedJob['company'])
-const tempDate = ref(props.selectedJob['date'])
+const tempDate = ref(dateToStr(props.selectedJob['date']))
 const tempURL = ref(props.selectedJob['url'])
 const tempNotes = ref(props.selectedJob['notes'])
 
@@ -24,7 +25,7 @@ function editJob() {
     id: props.selectedJob['id'],
     title: tempTitle.value,
     company: tempCompany.value,
-    date: tempDate.value,
+    date: new Date(tempDate.value),
     url: tempURL.value,
     notes: tempNotes.value
   }
