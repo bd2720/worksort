@@ -6,6 +6,8 @@ import JobAdd from './Components/JobAdd.vue'
 import JobEdit from './Components/JobEdit.vue'
 import JobDelete from './Components/JobDelete.vue'
 
+import CatAdd from './Components/CatAdd.vue'
+
 const addingJob = ref(false)
 const editingJob = ref(false)
 const deletingJob = ref(false)
@@ -13,9 +15,11 @@ const deletingJob = ref(false)
 const selectedJob = ref(undefined)
 const jobSelected = computed(() => Boolean(selectedJob.value))
 
+const addingCat = ref(false)
+
 // show functional buttons (Add)
 const showFunctions = computed(() => {
-  return !addingJob.value && !editingJob.value && !jobSelected.value
+  return !addingJob.value && !editingJob.value && !jobSelected.value && !addingCat.value
 })
 // show extended job info (if a job is selected)
 const showExtendedJob = computed(() => {
@@ -23,7 +27,7 @@ const showExtendedJob = computed(() => {
 })
 // enlarge the aside if sub-menus are active
 const enlargeAside = computed(() => {
-  return addingJob.value || jobSelected.value
+  return addingJob.value || jobSelected.value || addingCat.value
 })
 </script>
 
@@ -39,17 +43,21 @@ const enlargeAside = computed(() => {
     <aside :class="enlargeAside ? 'enlargeAside' : ''">
       <div class="function-wrapper" v-if="showFunctions">
         <button @click="addingJob = true">New Job</button>
+        <button @click="addingCat = true">New Table</button>
       </div>
-      <div class="add-wrapper" v-if="addingJob">
+      <div class="add-job-wrapper" v-if="addingJob">
         <JobAdd @job_add="addingJob = false" @cancel_add="addingJob = false"/>
       </div>
-      <div class="view-wrapper" v-if="showExtendedJob">
+      <div class="add-cat-wrapper" v-if="addingCat">
+        <CatAdd @cat_add="addingCat = false" @cancel_add="addingCat = false"/>
+      </div>
+      <div class="view-job-wrapper" v-if="showExtendedJob">
         <JobView :selectedJob="selectedJob" @job_deselect="selectedJob = undefined" @job_edit="editingJob = true" @job_delete="deletingJob = true"/>
       </div>
-      <div class="edit-wrapper" v-if="editingJob">
+      <div class="edit-job-wrapper" v-if="editingJob">
         <JobEdit :selectedJob="selectedJob" @job_edit="(job) => { editingJob = false; selectedJob = job }" @cancel_edit="editingJob = false"/>
       </div>
-      <div class="delete-wrapper" v-if="deletingJob">
+      <div class="delete-job-wrapper" v-if="deletingJob">
         <JobDelete :selectedJobID="selectedJob['id']" @job_delete="deletingJob = false; selectedJob = undefined"/>
       </div>
     </aside>
@@ -163,7 +171,7 @@ aside {
   justify-content: space-evenly;
 }
 
-.view-wrapper {
+.view-job-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;

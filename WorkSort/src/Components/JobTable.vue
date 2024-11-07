@@ -1,5 +1,5 @@
 <script setup>
-import { db_query } from '../dbUtil'
+import { db_jobs_query } from '../dbUtil'
 import { dateToShortStr, getFavicon } from '../util'
 
 const props = defineProps({
@@ -8,11 +8,18 @@ const props = defineProps({
 
 const emit = defineEmits(['job_select'])
 // table of jobs, reactive from Dexie's liveQuery()
-const jobs = db_query()
+const jobs = db_jobs_query()
 </script>
 
 <template>
   <div id="table-wrapper">
+    <div class="table-header-wrapper">
+      <button>&lt;</button>
+      <h1>Table : Main</h1>
+      <button>&gt;</button>
+      <button>Edit</button>
+      <button>Del</button>
+    </div>
     <table v-if="jobs && jobs.length">
       <thead>
         <tr>
@@ -45,13 +52,12 @@ const jobs = db_query()
 </template>
 
 <style scoped>
+
 #table-wrapper {
   --table-col: #e7e7e7;
   --table-head-col: #c7c7c7;
   --table-alt-col: #d7d7d7;
 
-  display: flex;
-  justify-content: center;
   width: calc(100% - 60px);
   margin: 20px;
   background: var(--table-col);
@@ -61,6 +67,13 @@ const jobs = db_query()
 
 p {
   font-size: 24px;
+}
+
+.table-header-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
 }
 
 table {

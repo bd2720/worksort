@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { db_update } from '../dbUtil'
+import { db_jobs_update } from '../dbUtil'
 import { dateToStr } from '../util'
 
 const props = defineProps({
@@ -11,6 +11,9 @@ const emit = defineEmits([
   'job_edit',
   'cancel_edit'
 ])
+
+// mock category names
+const cats = ref(['Main', 'Applied', 'Negative', 'Positive'])
 
 /* input variables can be initialized here, since we know this
 component will only be created after a job is selected */
@@ -30,7 +33,7 @@ function editJob() {
     notes: tempNotes.value
   }
   // save new job info to db
-  db_update(editedJob)
+  db_jobs_update(editedJob)
   emit('job_edit', editedJob)
 }
 
@@ -46,6 +49,9 @@ function cancelEdit() {
     <input type="date" v-model="tempDate" placeholder="Date Applied">
     <input type="url" v-model="tempURL" placeholder="Link">
     <input v-model="tempNotes" placeholder="Notes (optional)">
+    <select>
+      <option v-for="cat in cats">{{cat}}</option>
+    </select>
     <div class="input-button-wrapper">
       <button @click="editJob()">Save</button>
       <button @click="cancelEdit()">Cancel</button>

@@ -44,6 +44,12 @@ const emit = defineEmits([
         {{ selectedJob['notes'] }}
       </p>
     </div>
+    <div class="info-item">
+      <h3>Table</h3>
+      <p>
+        (cat. name here)
+      </p>
+    </div>
   </div>
   <div class="info-option-wrapper">
     <button @click="emit('job_deselect')">Close</button>

@@ -1,5 +1,5 @@
 <script setup>
-import { db_delete } from '../dbUtil'
+import { db_jobs_delete } from '../dbUtil'
 
 const props = defineProps({
   selectedJobID: Number,
@@ -12,7 +12,7 @@ const emit = defineEmits([
 // delete the job associated with selectedJobID
 function deleteJob() {
   // remove job with matching ID (in DB)
-  db_delete(props.selectedJobID)
+  db_jobs_delete(props.selectedJobID)
   emit('job_delete')
 }
 // call this upon creation

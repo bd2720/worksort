@@ -1,11 +1,14 @@
 <script setup>
 import { ref } from 'vue'
-import { db_insert } from '../dbUtil'
+import { db_jobs_insert } from '../dbUtil'
 
 const emit = defineEmits([
   'job_add',
   'cancel_add'
 ])
+
+// mock category names
+const cats = ref(['Main', 'Applied', 'Negative', 'Positive'])
 
 // input variables
 const tempTitle = ref("")
@@ -24,7 +27,7 @@ function addJob() {
     notes: tempNotes.value
   }
   // insert into DB
-  db_insert(newJob)
+  db_jobs_insert(newJob)
   emit('job_add')
 }
 
@@ -40,6 +43,9 @@ function cancelAdd(){
     <input type="date" v-model="tempDate" placeholder="Date Applied">
     <input type="url" v-model="tempURL" placeholder="Link">
     <input v-model="tempNotes" placeholder="Notes (optional)">
+    <select>
+      <option v-for="cat in cats">{{cat}}</option>
+    </select>
     <div class="input-button-wrapper">
       <button @click="addJob">Add Job</button>
       <button @click="cancelAdd">Cancel</button>
