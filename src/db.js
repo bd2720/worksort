@@ -4,10 +4,8 @@ import Dexie from 'dexie'
 const db = new Dexie('jobData')
 export default db
 
-
 // Delete all IDB data
 //window.indexedDB.deleteDatabase('jobData')
-
 
 // create jobs, cats tables
 db.version(1).stores({

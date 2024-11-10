@@ -1,7 +1,7 @@
 <script setup>
 import { db_jobs_query, db_cats_query } from '../dbUtil'
 import { dateToShortStr, getFavicon } from '../util'
-import { ref, computed, toRef, watch } from 'vue'
+import { computed, toRef, watch } from 'vue'
 
 const props = defineProps({
   selectedCat: Object,
@@ -35,14 +35,12 @@ const selectedCatIndex = computed(() => {
 const hasPrevCat = computed(() => selectedCatIndex.value > 0 )
 const hasNextCat = computed(() => (cats.value != undefined) && selectedCatIndex.value < cats.value.length - 1 )
 function prevCat() {
-  if(hasPrevCat.value){
+  if(!hasPrevCat.value) return
     emit('cat_select', cats.value[selectedCatIndex.value - 1])
-  }
 }
 function nextCat() {
-  if(hasNextCat.value){
-    emit('cat_select', cats.value[selectedCatIndex.value + 1])
-  }
+  if(!hasNextCat.value) return
+  emit('cat_select', cats.value[selectedCatIndex.value + 1])
 }
 
 // upon setup, pass category (Main) to parent
@@ -50,49 +48,55 @@ emit('cat_select', {name:'Main',id:1})
 </script>
 
 <template>
-  <transition name="fade">
-    <div id="table-wrapper" v-if="jobs">
-      <div class="table-header-wrapper">
-        <button @click="prevCat" :disabled="!hasPrevCat || enlargeAside">&lt;</button>
-        <h1 v-if="selectedCat">Table: {{ props.selectedCat['name'] }}</h1>
-        <h1 v-else>Table: Main</h1>
-        <button @click="nextCat" :disabled="!hasNextCat | enlargeAside">&gt;</button>
-        <button :disabled="enlargeAside">Edit</button>
-        <button :disabled="enlargeAside">Del</button>
+  <div id="table-wrapper">
+    <transition name="fade">
+      <div id="table-content-wrapper" v-if="jobs">
+        <div class="table-header-wrapper">
+          <div class="table-nav">
+            <button @click="prevCat" :disabled="!hasPrevCat || enlargeAside" title="Previous table">&lt;</button>
+            <h1 v-if="selectedCat">{{ props.selectedCat['name'] }}</h1>
+            <h1 v-else>Main</h1>
+            <button @click="nextCat" :disabled="!hasNextCat | enlargeAside" title="Next table">&gt;</button>
+          </div>
+          <button :disabled="true || enlargeAside" title="Rename this table">Edit</button>
+          <button :disabled="true || enlargeAside" title="Delete this table">Delete</button>
+        </div>
+        <!-- Failsafe -->
+        <p v-if="!jobs">
+          Loading jobs...
+        </p>
+        <p v-else-if="!jobs.length">
+          You haven't added any jobs to this table yet. Click <strong>New Job</strong> to begin organizing, or
+          add some jobs from another table!
+        </p>
+        <table v-else>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Title</th>
+              <th>Company</th>
+              <th>Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="job in jobs">
+              <td>
+                <img alt="-----" :src="getFavicon(job['url'])" height="32px" width="32px">
+              </td>
+              <td>{{ job['title'] }}</td>
+              <td>{{ job['company'] }}</td>
+              <td>{{ dateToShortStr(job['date']) }}</td>
+              <td>
+                <!-- disable view buttons if the aside is in focus -->
+                <button @click="emit('job_select', job)" :disabled="enlargeAside">View</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <p v-if="!jobs">
-        Loading jobs...
-      </p>
-      <p v-else-if="!jobs.length">
-        You haven't added any jobs to this table yet. Click <strong>New Job</strong> to start organizing!
-      </p>
-      <table v-else>
-        <thead>
-          <tr>
-            <th></th>
-            <th>Title</th>
-            <th>Company</th>
-            <th>Date</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="job in jobs">
-            <td>
-              <img alt="-----" :src="getFavicon(job['url'])" height="32px" width="32px">
-            </td>
-            <td>{{ job['title'] }}</td>
-            <td>{{ job['company'] }}</td>
-            <td>{{ dateToShortStr(job['date']) }}</td>
-            <td>
-              <!-- disable view buttons if the aside is in focus -->
-              <button @click="emit('job_select', job)" :disabled="enlargeAside">View</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </transition>
+    </transition>
+  </div>
 </template>
 
 <style scoped>
@@ -118,6 +122,7 @@ emit('cat_select', {name:'Main',id:1})
 
 p {
   font-size: 24px;
+  text-align: center;
 }
 
 .table-header-wrapper {
@@ -125,6 +130,18 @@ p {
   flex-direction: row;
   justify-content: space-evenly;
   align-items: center;
+  gap: 5px;
+}
+
+.table-nav {
+  display: flex;
+  justify-content: space-between;
+  width: min(500px, 100%);
+}
+
+.table-header-wrapper button {
+  height: 36px;
+  font-size: 20px;
 }
 
 table {
