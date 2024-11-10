@@ -4,6 +4,11 @@ import Dexie from 'dexie'
 const db = new Dexie('jobData')
 export default db
 
+
+// Delete all IDB data
+//window.indexedDB.deleteDatabase('jobData')
+
+
 // create jobs, cats tables
 db.version(1).stores({
   // id is (auto-incrementing) primary key
@@ -18,3 +23,10 @@ db.open()
 }).catch((err) => {
   console.error('dbUtil.js: Failed to open DB -- ' + err)
 })
+
+// add Main table
+db.cats.add({ name: 'Main' })
+.then((id) => {
+  console.log(`db.js: Main table added successfully (id = ${id})`)
+})
+.catch(/* Main already exists; do nothing */)

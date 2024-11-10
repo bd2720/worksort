@@ -27,34 +27,47 @@ export function db_jobs_delete(jobID) {
   .catch((err) => console.error('dbUtil.js: Failed to delete job -- ' + err))
 }
 
-// get entire array of jobs
-export function db_jobs_query() {
+// get array of jobs by category
+export function db_jobs_query(catID) {
+  // must pass category as a ref, so query updates with category
+  return useObservable(
+    liveQuery(async () => {
+      console.log(`dbUtil.js: Job query triggered (catID = ${catID})`);
+      return await db.jobs
+        .where('catID').equals(catID)
+        .toArray()
+    })
+  )
+}
+
+/* CATEGORIES (TABLES) */
+
+export function db_cats_insert(cat) {
+  db.cats.add(cat)
+  .then((retID) => console.log(`dbUtil.js: Category added successfully (id = ${retID})`))
+  .catch((err) => console.error('dbUtil.js: Failed to add category -- ' + err))
+}
+
+export function db_cats_update(catWithID) {
+  db.cats.put(catWithID)
+  .then((retID) => console.log(`dbUtil.js: Category edited successfully (id = ${retID})`))
+  .catch((err) => console.error('dbUtil.js: Failed to edit category -- ' + err))
+}
+
+export function db_cats_delete(catID) {
+  db.cats.delete(catID)
+  .then(() => console.log(`dbUtil.js: Category deleted successfully (id = ${catID})`))
+  .catch((err) => console.error('dbUtil.js: Failed to delete category -- ' + err))
+}
+
+export function db_cats_query() {
   return useObservable(
     liveQuery(
       async () => {
-        return await db.jobs
-        .orderBy('date')
+        console.log(`dbUtil.js: Category query triggered`);
+        return await db.cats
         .toArray()
       }
     )
   )
-}
-
-/* CATEGORIES */
-
-
-export function db_cats_insert(cat) {
-
-}
-
-export function db_cats_update(catWithID) {
-
-}
-
-export function db_cats_delete(catID) {
-
-}
-
-export function db_cats_query() {
-  
 }

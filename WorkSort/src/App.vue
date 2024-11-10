@@ -16,6 +16,8 @@ const selectedJob = ref(undefined)
 const jobSelected = computed(() => Boolean(selectedJob.value))
 
 const addingCat = ref(false)
+// reference to the selected table
+const selectedCat = ref(undefined)
 
 // show functional buttons (Add)
 const showFunctions = computed(() => {
@@ -37,25 +39,28 @@ const enlargeAside = computed(() => {
     <p class="subtitle">Organize your job applications</p>
   </header>
   <div class="main-wrapper">
+    <!-- TABLE -->
     <main>
-      <JobTable :enlargeAside="enlargeAside" @job_select="(job) => { selectedJob = job }"/>
+      <JobTable :enlargeAside="enlargeAside" :selectedCat="selectedCat" @job_select="(job) => { selectedJob = job }" @cat_select="(cat) => { selectedCat = cat }"/>
     </main>
     <aside :class="enlargeAside ? 'enlargeAside' : ''">
+      <!-- ADD STUFF -->
       <div class="function-wrapper" v-if="showFunctions">
         <button @click="addingJob = true">New Job</button>
         <button @click="addingCat = true">New Table</button>
       </div>
       <div class="add-job-wrapper" v-if="addingJob">
-        <JobAdd @job_add="addingJob = false" @cancel_add="addingJob = false"/>
+        <JobAdd :selectedCat="selectedCat" @job_add="addingJob = false" @cancel_add="addingJob = false"/>
       </div>
       <div class="add-cat-wrapper" v-if="addingCat">
         <CatAdd @cat_add="addingCat = false" @cancel_add="addingCat = false"/>
       </div>
+      <!-- JOB INFO -->
       <div class="view-job-wrapper" v-if="showExtendedJob">
-        <JobView :selectedJob="selectedJob" @job_deselect="selectedJob = undefined" @job_edit="editingJob = true" @job_delete="deletingJob = true"/>
+        <JobView :selectedJob="selectedJob" :selectedCat="selectedCat" @job_deselect="selectedJob = undefined" @job_edit="editingJob = true" @job_delete="deletingJob = true"/>
       </div>
       <div class="edit-job-wrapper" v-if="editingJob">
-        <JobEdit :selectedJob="selectedJob" @job_edit="(job) => { editingJob = false; selectedJob = job }" @cancel_edit="editingJob = false"/>
+        <JobEdit :selectedJob="selectedJob" :selectedCat="selectedCat" @job_edit="(job, cat) => { editingJob = false; selectedJob = job; selectedCat = cat }" @cancel_edit="editingJob = false"/>
       </div>
       <div class="delete-job-wrapper" v-if="deletingJob">
         <JobDelete :selectedJobID="selectedJob['id']" @job_delete="deletingJob = false; selectedJob = undefined"/>

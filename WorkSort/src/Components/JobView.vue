@@ -2,6 +2,7 @@
 import { dateToStr } from '../util'
 
 const props = defineProps({
+  selectedCat: Object,
   selectedJob: Object
 })
 
@@ -47,7 +48,7 @@ const emit = defineEmits([
     <div class="info-item">
       <h3>Table</h3>
       <p>
-        (cat. name here)
+        {{ selectedCat['name'] }}
       </p>
     </div>
   </div>

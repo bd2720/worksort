@@ -12,9 +12,9 @@ const tempName = ref("")
 
 function addCat() {
   const newCat = {
-
+    name: tempName.value
   }
-  // insert into DB
+  // attempt to insert into DB
   db_cats_insert(newCat)
   emit('cat_add')
 }
