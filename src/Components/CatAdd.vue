@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { db_cats_insert } from '../dbUtil'
+import { db_cats_insert, db_cats_query } from '../dbUtil'
 
 const emit = defineEmits([
   'cat_add',
@@ -9,13 +9,22 @@ const emit = defineEmits([
 
 // input variables
 const tempName = ref("")
+const cats = db_cats_query()
+
+// detect category with given name
+function catExists(catName){
+  return cats.value.find((cat) => cat['name'] == catName)
+}
 
 function addCat() {
   const newCat = {
     name: tempName.value
   }
-  // attempt to insert into DB
-  db_cats_insert(newCat)
+  // don't insert if name already exists
+  if(!catExists(newCat['name'])){
+    // attempt to insert into DB
+    db_cats_insert(newCat)
+  }
   emit('cat_add')
 }
 
