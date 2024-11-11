@@ -8,15 +8,15 @@ const props = defineProps({
   enlargeAside: Boolean
 })
 
-const emit = defineEmits(['job_select', 'cat_select'])
+const emit = defineEmits(['job_select', 'cat_select', 'cat_edit'])
 
 const selectedCatRef = toRef(props, 'selectedCat')
 
 // table of jobs, reactive from Dexie's liveQuery()
 var jobs = db_jobs_query(1)
 
-// update whever selectedCat changes
-watch(selectedCatRef, async (newCat) => {
+// update whenever selectedCat changes
+watch(selectedCatRef, (newCat) => {
   //console.log(`selectedCat changed: id = ${newCat['id']}`)
   jobs = db_jobs_query(newCat['id'])
 })
@@ -42,9 +42,6 @@ function nextCat() {
   if(!hasNextCat.value) return
   emit('cat_select', cats.value[selectedCatIndex.value + 1])
 }
-
-// upon setup, pass category (Main) to parent
-emit('cat_select', {name:'Main',id:1})
 </script>
 
 <template>
@@ -54,12 +51,14 @@ emit('cat_select', {name:'Main',id:1})
         <div class="table-header-wrapper">
           <div class="table-nav">
             <button @click="prevCat" :disabled="!hasPrevCat || enlargeAside" title="Previous table">&lt;</button>
-            <h1 v-if="selectedCat">{{ props.selectedCat['name'] }}</h1>
-            <h1 v-else>Main</h1>
+            <transition name="fade">
+              <h1 v-if="selectedCat">{{ props.selectedCat['name'] }}</h1>
+            </transition>
+            <h1 v-if="!selectedCat">Main</h1>
             <button @click="nextCat" :disabled="!hasNextCat | enlargeAside" title="Next table">&gt;</button>
           </div>
-          <button :disabled="true || enlargeAside" title="Rename this table">Edit</button>
-          <button :disabled="true || enlargeAside" title="Delete this table">Delete</button>
+          <button @click="emit('cat_edit')" :disabled=" selectedCat['id'] == 1 || enlargeAside" title="Rename this table">Edit</button>
+          <button @click="emit('cat_delete')" :disabled="selectedCat['id'] == 1 || enlargeAside || jobs.length > 0" title="Delete this table">Delete</button>
         </div>
         <!-- Failsafe -->
         <p v-if="!jobs">

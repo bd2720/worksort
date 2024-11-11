@@ -7,6 +7,8 @@ import JobEdit from './Components/JobEdit.vue'
 import JobDelete from './Components/JobDelete.vue'
 
 import CatAdd from './Components/CatAdd.vue'
+import CatEdit from './Components/CatEdit.vue'
+import CatDelete from './Components/CatDelete.vue'
 
 const addingJob = ref(false)
 const editingJob = ref(false)
@@ -15,13 +17,18 @@ const deletingJob = ref(false)
 const selectedJob = ref(undefined)
 const jobSelected = computed(() => Boolean(selectedJob.value))
 
+// main category; should not be edited or deleted
+const mainCat = {name:'Main', id:1}
+
 const addingCat = ref(false)
+const editingCat = ref(false)
+const deletingCat = ref(false)
 // reference to the selected table
-const selectedCat = ref(undefined)
+const selectedCat = ref(mainCat)
 
 // show functional buttons (Add)
 const showFunctions = computed(() => {
-  return !addingJob.value && !editingJob.value && !jobSelected.value && !addingCat.value
+  return !addingJob.value && !editingJob.value && !jobSelected.value && !addingCat.value && !editingCat.value
 })
 // show extended job info (if a job is selected)
 const showExtendedJob = computed(() => {
@@ -29,7 +36,7 @@ const showExtendedJob = computed(() => {
 })
 // enlarge the aside if sub-menus are active
 const enlargeAside = computed(() => {
-  return addingJob.value || jobSelected.value || addingCat.value
+  return addingJob.value || jobSelected.value || addingCat.value || editingCat.value
 })
 </script>
 
@@ -41,7 +48,7 @@ const enlargeAside = computed(() => {
   <div class="main-wrapper">
     <!-- TABLE -->
     <main>
-      <JobTable :enlargeAside="enlargeAside" :selectedCat="selectedCat" @job_select="(job) => { selectedJob = job }" @cat_select="(cat) => { selectedCat = cat }"/>
+      <JobTable :enlargeAside="enlargeAside" :selectedCat="selectedCat" @job_select="(job) => { selectedJob = job }" @cat_select="(cat) => { selectedCat = cat }" @cat_edit="editingCat = true" @cat_delete="deletingCat = true"/>
     </main>
     <aside :class="enlargeAside ? 'enlargeAside' : ''">
       <!-- ADD STUFF -->
@@ -55,7 +62,7 @@ const enlargeAside = computed(() => {
       <div class="add-cat-wrapper" v-if="addingCat">
         <CatAdd @cat_add="addingCat = false" @cancel_add="addingCat = false"/>
       </div>
-      <!-- JOB INFO -->
+      <!-- JOB VIEW/EDIT/DEL -->
       <div class="view-job-wrapper" v-if="showExtendedJob">
         <JobView :selectedJob="selectedJob" :selectedCat="selectedCat" @job_deselect="selectedJob = undefined" @job_edit="editingJob = true" @job_delete="deletingJob = true"/>
       </div>
@@ -64,6 +71,13 @@ const enlargeAside = computed(() => {
       </div>
       <div class="delete-job-wrapper" v-if="deletingJob">
         <JobDelete :selectedJobID="selectedJob['id']" @job_delete="deletingJob = false; selectedJob = undefined"/>
+      </div>
+      <!-- CATEGORY EDIT/DEL -->
+      <div class="edit-cat-wrapper" v-if="editingCat">
+        <CatEdit :selectedCat="selectedCat" @cat_edit="(cat) => { editingCat = false; selectedCat = cat } " @cancel_edit="editingCat = false"/>
+      </div>
+      <div class="delete-cat-wrapper" v-if="deletingCat">
+        <CatDelete :selectedCatID="selectedCat['id']" @cat_delete="deletingJob = false; selectedCat = mainCat"/>
       </div>
     </aside>
   </div>
