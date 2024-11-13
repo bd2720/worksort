@@ -3,7 +3,8 @@ import { dateToStr } from '../util'
 
 const props = defineProps({
   selectedCat: Object,
-  selectedJob: Object
+  selectedJob: Object,
+  deletingJob: Boolean
 })
 
 const emit = defineEmits([
@@ -36,7 +37,7 @@ const emit = defineEmits([
     <div class="info-item">
       <h3>Link</h3>
       <p id="info-link">
-        <a :href="selectedJob['url']">{{ selectedJob['url'] }}</a>
+        <a :href="selectedJob['url']" target="_blank">{{ selectedJob['url'] }}</a>
       </p>
     </div>
     <div class="info-item">
@@ -52,7 +53,7 @@ const emit = defineEmits([
       </p>
     </div>
   </div>
-  <div class="info-option-wrapper">
+  <div v-if="!deletingJob" class="info-option-wrapper">
     <button @click="emit('job_deselect')">Close</button>
     <button @click="emit('job_edit')">Edit</button>
     <button @click="emit('job_delete')">Delete</button>

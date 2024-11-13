@@ -34,7 +34,8 @@ function cancelEdit(){
 
 <template>
   <form class="input-wrapper">
-    <input v-model="tempName" placeholder="Table Name">
+    <label for="input_table">Table Name</label>
+    <input v-model="tempName" id="input_table">
     <div class="input-button-wrapper">
       <button @click="editCat">Rename Table</button>
       <button @click="cancelEdit">Cancel</button>

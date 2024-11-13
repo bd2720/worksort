@@ -35,7 +35,8 @@ function cancelAdd(){
 
 <template>
   <form class="input-wrapper">
-    <input v-model="tempName" placeholder="Table Name">
+    <label for="input_table">Table Name</label>
+    <input v-model="tempName" id="input_name">
     <div class="input-button-wrapper">
       <button @click="addCat">Add Table</button>
       <button @click="cancelAdd">Cancel</button>

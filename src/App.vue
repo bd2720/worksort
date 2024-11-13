@@ -28,7 +28,7 @@ const selectedCat = ref(mainCat)
 
 // show functional buttons (Add)
 const showFunctions = computed(() => {
-  return !addingJob.value && !editingJob.value && !jobSelected.value && !addingCat.value && !editingCat.value
+  return !addingJob.value && !editingJob.value && !jobSelected.value && !addingCat.value && !editingCat.value && !deletingCat.value
 })
 // show extended job info (if a job is selected)
 const showExtendedJob = computed(() => {
@@ -36,7 +36,7 @@ const showExtendedJob = computed(() => {
 })
 // enlarge the aside if sub-menus are active
 const enlargeAside = computed(() => {
-  return addingJob.value || jobSelected.value || addingCat.value || editingCat.value
+  return addingJob.value || jobSelected.value || addingCat.value || editingCat.value || deletingCat.value
 })
 </script>
 
@@ -64,20 +64,20 @@ const enlargeAside = computed(() => {
       </div>
       <!-- JOB VIEW/EDIT/DEL -->
       <div class="view-job-wrapper" v-if="showExtendedJob">
-        <JobView :selectedJob="selectedJob" :selectedCat="selectedCat" @job_deselect="selectedJob = undefined" @job_edit="editingJob = true" @job_delete="deletingJob = true"/>
+        <JobView :selectedJob="selectedJob" :selectedCat="selectedCat" :deletingJob="deletingJob" @job_deselect="selectedJob = undefined" @job_edit="editingJob = true" @job_delete="deletingJob = true"/>
       </div>
       <div class="edit-job-wrapper" v-if="editingJob">
         <JobEdit :selectedJob="selectedJob" :selectedCat="selectedCat" @job_edit="(job, cat) => { editingJob = false; selectedJob = job; selectedCat = cat }" @cancel_edit="editingJob = false"/>
       </div>
       <div class="delete-job-wrapper" v-if="deletingJob">
-        <JobDelete :selectedJobID="selectedJob['id']" @job_delete="deletingJob = false; selectedJob = undefined"/>
+        <JobDelete :selectedJobID="selectedJob['id']" @job_delete="deletingJob = false; selectedJob = undefined" @cancel_delete="deletingJob = false"/>
       </div>
       <!-- CATEGORY EDIT/DEL -->
       <div class="edit-cat-wrapper" v-if="editingCat">
         <CatEdit :selectedCat="selectedCat" @cat_edit="(cat) => { editingCat = false; selectedCat = cat } " @cancel_edit="editingCat = false"/>
       </div>
       <div class="delete-cat-wrapper" v-if="deletingCat">
-        <CatDelete :selectedCatID="selectedCat['id']" @cat_delete="deletingJob = false; selectedCat = mainCat"/>
+        <CatDelete :selectedCatID="selectedCat['id']" @cat_delete="deletingCat = false; selectedCat = mainCat" @cancel_delete="deletingCat = false"/>
       </div>
     </aside>
   </div>
@@ -89,6 +89,7 @@ const enlargeAside = computed(() => {
   --header-col: #e7e7e7;
   --aside-col: #d7d7d7;
   --text-col: #0f0f0f;
+  --label-col: #474747;
   --subtext-col: #8f8f8f;
   --button-col: #e7e7e7;
   --border-col: #bfbfbf;
@@ -102,6 +103,7 @@ const enlargeAside = computed(() => {
 body {
   background-color: var(--bg-col);
   color: var(--text-col);
+  overflow-x: hidden;
 }
 
 button {
@@ -173,11 +175,17 @@ aside {
   margin: 20px 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
 }
 
-.input-wrapper > * {
+.input-wrapper > input, select {
   font-size: 24px;
+  margin-bottom: 4px;
+}
+
+label {
+  color: var(--label-col);
+  font-size: 18px;
+  margin-bottom: 2px;
 }
 
 .input-wrapper button {
@@ -188,6 +196,7 @@ aside {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
+  padding-top: 8px;
 }
 
 .view-job-wrapper {
