@@ -8,7 +8,7 @@ const props = defineProps({
   enlargeAside: Boolean
 })
 
-const emit = defineEmits(['job_select', 'cat_select', 'cat_edit'])
+const emit = defineEmits(['job_select', 'cat_select', 'cat_edit', 'cat_delete'])
 
 const selectedCatRef = toRef(props, 'selectedCat')
 
@@ -25,8 +25,8 @@ watch(selectedCatRef, (newCat) => {
 const cats = db_cats_query()
 // compute selected category index based on props.selectedCat
 const selectedCatIndex = computed(() => {
-  if(cats.value == undefined) return 0
-  const index = cats.value.findIndex((cat) => cat['id'] == props.selectedCat['id'])
+  if(cats.value === undefined) return 0
+  const index = cats.value.findIndex((cat) => cat['id'] === props.selectedCat['id'])
   if(index != -1) return index
   // if not found, default to main cat.
   return 0
@@ -57,8 +57,8 @@ function nextCat() {
             <h1 v-if="!selectedCat">Main</h1>
             <button @click="nextCat" :disabled="!hasNextCat | enlargeAside" title="Next table">&gt;</button>
           </div>
-          <button @click="emit('cat_edit')" :disabled=" selectedCat['id'] == 1 || enlargeAside" title="Rename this table">Edit</button>
-          <button @click="emit('cat_delete')" :disabled="selectedCat['id'] == 1 || enlargeAside || jobs.length > 0" title="Delete this table">Delete</button>
+          <button @click="emit('cat_edit')" :disabled=" selectedCat['id'] === 1 || enlargeAside" title="Rename this table">Edit</button>
+          <button @click="emit('cat_delete')" :disabled="selectedCat['id'] === 1 || enlargeAside || jobs.length > 0" title="Delete this table">Delete</button>
         </div>
         <!-- Failsafe -->
         <p v-if="!jobs">
@@ -122,6 +122,7 @@ function nextCat() {
 p {
   font-size: 24px;
   text-align: center;
+  margin-top: 4px;
 }
 
 .table-header-wrapper {

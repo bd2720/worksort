@@ -63,7 +63,7 @@ const emit = defineEmits([
 <style scoped>
 
 .info-wrapper {
-  --info-col: #e7e7e7;
+  --info-col: #f9f9f9;
 }
 
 .info-item {
@@ -82,10 +82,6 @@ const emit = defineEmits([
   border: 1px solid var(--border-col); 
   margin-top: 4px;
   padding: 1px 4px;
-}
-
-/* display link, wrap if necessary */
-#info-link {
   word-wrap: break-word;
 }
 

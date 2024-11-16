@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { db_jobs_insert, db_cats_query } from '../dbUtil'
+import { getTodayStr } from '../util'
 
 const props = defineProps({
   selectedCat: Object
@@ -17,10 +18,10 @@ const cats = db_cats_query()
 // input variables
 const tempTitle = ref("")
 const tempCompany = ref("")
-const tempDate = ref("")
+const tempDate = ref(getTodayStr()) // default to today's date
 const tempURL = ref("")
 const tempNotes = ref("")
-const tempCatID = ref(props.selectedCat['id'])
+const tempCat = ref(props.selectedCat)
 
 function addJob() {
   const newJob = {
@@ -29,11 +30,11 @@ function addJob() {
     date: new Date(tempDate.value),
     url: tempURL.value,
     notes: tempNotes.value,
-    catID: tempCatID.value
+    catID: tempCat.value['id']
   }
   // insert into DB
   db_jobs_insert(newJob)
-  emit('job_add')
+  emit('job_add', tempCat.value)
 }
 
 function cancelAdd(){
@@ -42,23 +43,23 @@ function cancelAdd(){
 </script>
 
 <template>
-  <form class="input-wrapper">
-    <label for="input_title">Job Title</label>
-    <input v-model="tempTitle" id="input_title">
-    <label for="input_company">Company Name</label>
-    <input v-model="tempCompany" id="input_company">
-    <label for="input_date">Date Applied</label>
-    <input type="date" v-model="tempDate" id="input_date">
+  <form class="input-wrapper" @submit.prevent="addJob">
+    <label for="input_title"><span class="require">* </span>Job Title</label>
+    <input v-model="tempTitle" id="input_title" maxlength="50" required>
+    <label for="input_company"><span class="require">* </span>Company Name</label>
+    <input v-model="tempCompany" id="input_company" maxlength="50" required>
+    <label for="input_date"><span class="require">* </span>Date Applied</label>
+    <input type="date" v-model="tempDate" id="input_date" required>
     <label for="input_url">Link</label>
-    <input type="url" v-model="tempURL" id="input_url" placeholder="https://...">
+    <input type="url" v-model="tempURL" id="input_url" placeholder="https://..." maxlength="300" autocomplete="off">
     <label for="input_notes">Notes</label>
-    <input v-model="tempNotes" id="input_notes">
-    <label for="input_table">Table</label>
-    <select v-model="tempCatID" id="input_table">
-      <option v-for="cat in cats" :value="cat['id']" :selected="props.selectedCat['id'] == cat['id']">{{cat['name']}}</option>
+    <textarea v-model="tempNotes" id="input_notes" maxlength="300" rows="3"></textarea>
+    <label for="input_table"><span class="require">* </span>Table</label>
+    <select v-model="tempCat" id="input_table" required>
+      <option v-for="cat in cats" :value="cat">{{cat['name']}}</option>
     </select>
     <div class="input-button-wrapper">
-      <button @click="addJob">Add Job</button>
+      <input type="submit" value="Add Job" />
       <button @click="cancelAdd">Cancel</button>
     </div>
   </form>

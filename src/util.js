@@ -6,8 +6,8 @@ export function getFavicon(url) {
   // search for first '/' after '//'
   let offset = 0
   let shortUrl = url
-  if (url.indexOf('http') == 0) {
-    if (url[4] == 's') { // https
+  if (url.indexOf('http') === 0) {
+    if (url[4] === 's') { // https
       shortUrl = url.slice(8)
       offset = 8
     } else { // http
@@ -16,7 +16,7 @@ export function getFavicon(url) {
     }
   }
   const slashIndex = shortUrl.indexOf('/')
-  if (slashIndex == -1) {
+  if (slashIndex === -1) {
     return url + '/favicon.ico'
   }
   return url.slice(0, offset + slashIndex) + '/favicon.ico'
@@ -36,4 +36,9 @@ export function dateToShortStr(date) {
   const m = dateStr[5] + dateStr[6]
   const d = dateStr[8] + dateStr[9]
   return `${m}/${d}/${y}`
+}
+
+// get today's date as 'yyyy-mm-dd'
+export function getTodayStr(){
+  return dateToStr(new Date())
 }

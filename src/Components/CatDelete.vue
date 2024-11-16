@@ -51,6 +51,7 @@ p {
 .delete-buttons {
   display: flex;
   justify-content: space-evenly;
+  margin-bottom: 12px;
 }
 button {
   font-size: 24px;

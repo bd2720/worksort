@@ -57,7 +57,7 @@ const enlargeAside = computed(() => {
         <button @click="addingCat = true">New Table</button>
       </div>
       <div class="add-job-wrapper" v-if="addingJob">
-        <JobAdd :selectedCat="selectedCat" @job_add="addingJob = false" @cancel_add="addingJob = false"/>
+        <JobAdd :selectedCat="selectedCat" @job_add="(cat) => {addingJob = false; selectedCat = cat}" @cancel_add="addingJob = false"/>
       </div>
       <div class="add-cat-wrapper" v-if="addingCat">
         <CatAdd @cat_add="addingCat = false" @cancel_add="addingCat = false"/>
@@ -106,7 +106,7 @@ body {
   overflow-x: hidden;
 }
 
-button {
+button, input[type="submit"] {
   font-family: sans-serif;
   color: var(--subtext-col);
   padding: 0.2% 1%;
@@ -177,9 +177,14 @@ aside {
   flex-direction: column;
 }
 
-.input-wrapper > input, select {
+.input-wrapper > input, select, textarea {
   font-size: 24px;
   margin-bottom: 4px;
+}
+
+textarea {
+  min-height: 84px;
+  resize: vertical;
 }
 
 label {
@@ -188,7 +193,12 @@ label {
   margin-bottom: 2px;
 }
 
-.input-wrapper button {
+.require {
+  color: #bd2720;
+}
+
+.input-wrapper button, 
+.input-wrapper input[type="submit"]  {
   font-size: 18px;
 }
 
