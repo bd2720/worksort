@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { db_jobs_insert, db_cats_query } from '../dbUtil'
 import { getTodayStr } from '../util'
+import VueTagsInput from '@sipec/vue3-tags-input'
 
 const props = defineProps({
   selectedCat: Object
@@ -22,6 +23,8 @@ const tempDate = ref(getTodayStr()) // default to today's date
 const tempURL = ref("")
 const tempNotes = ref("")
 const tempCat = ref(props.selectedCat)
+const tempTags = ref([])
+const tag = ref("")
 
 function addJob() {
   const newJob = {
@@ -30,7 +33,8 @@ function addJob() {
     date: new Date(tempDate.value),
     url: tempURL.value,
     notes: tempNotes.value,
-    catID: tempCat.value['id']
+    catID: tempCat.value['id'],
+    tags: JSON.parse(JSON.stringify(tempTags.value)) // deepcopy
   }
   // insert into DB
   db_jobs_insert(newJob)
@@ -44,17 +48,19 @@ function cancelAdd(){
 
 <template>
   <form class="input-wrapper" @submit.prevent="addJob">
-    <label for="input_title"><span class="require">* </span>Job Title</label>
+    <label for="input_title">Job Title<span class="require"> *</span></label>
     <input v-model="tempTitle" id="input_title" maxlength="50" required>
-    <label for="input_company"><span class="require">* </span>Company Name</label>
+    <label for="input_company">Company Name<span class="require"> *</span></label>
     <input v-model="tempCompany" id="input_company" maxlength="50" required>
-    <label for="input_date"><span class="require">* </span>Date Applied</label>
+    <label for="input_date">Date Applied<span class="require"> *</span></label>
     <input type="date" v-model="tempDate" id="input_date" required>
     <label for="input_url">Link</label>
     <input type="url" v-model="tempURL" id="input_url" placeholder="https://..." maxlength="300" autocomplete="off">
     <label for="input_notes">Notes</label>
     <textarea v-model="tempNotes" id="input_notes" maxlength="300" rows="3"></textarea>
-    <label for="input_table"><span class="require">* </span>Table</label>
+    <label for="input_tags">Tags</label>
+    <VueTagsInput v-model="tag" id="input_tags" :tags="tempTags" @tags-changed="(tags) => {tempTags = tags}" :max-tags="20" :maxlength="42"/>
+    <label for="input_table">Table<span class="require"> *</span></label>
     <select v-model="tempCat" id="input_table" required>
       <option v-for="cat in cats" :value="cat">{{cat['name']}}</option>
     </select>
@@ -64,3 +70,6 @@ function cancelAdd(){
     </div>
   </form>
 </template>
+
+<style>
+</style>

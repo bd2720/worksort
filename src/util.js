@@ -42,3 +42,9 @@ export function dateToShortStr(date) {
 export function getTodayStr(){
   return dateToStr(new Date())
 }
+
+// sort the array of jobs based on attribute value
+// this has to be done in JS since Dexie doesn't support WHERE + ORDER BY
+export function sortJobs(jobs){
+  return jobs.sort((a, b) => a['date'] < b['date'])
+}

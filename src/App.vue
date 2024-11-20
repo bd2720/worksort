@@ -93,6 +93,8 @@ const enlargeAside = computed(() => {
   --subtext-col: #8f8f8f;
   --button-col: #e7e7e7;
   --border-col: #bfbfbf;
+  --tag-col: #4582d3;
+  --red-col: #bd2720;
 }
 * {
   padding: 0;
@@ -194,7 +196,7 @@ label {
 }
 
 .require {
-  color: #bd2720;
+  color: var(--red-col);
 }
 
 .input-wrapper button, 
@@ -213,6 +215,29 @@ label {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/* style tags */
+.vue-tags-input {
+  margin-bottom: 4px;
+  max-width: none !important;
+  overflow: hidden;
+}
+
+.vue-tags-input.ti-focus .ti-input {
+  border: 1px solid black;
+}
+
+.vue-tags-input .ti-new-tag-input {
+  color: var(--text-col);
+}
+
+.vue-tags-input .ti-tag {
+  background: var(--tag-col) !important;
+}
+
+.vue-tags-input .ti-deletion-mark {
+  background: var(--red-col) !important;
 }
 
 /* display aside on top of main, for mobile */

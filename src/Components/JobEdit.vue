@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { db_jobs_update, db_cats_query } from '../dbUtil'
 import { dateToStr } from '../util'
+import VueTagsInput from '@sipec/vue3-tags-input'
 
 const props = defineProps({
   selectedCat: Object,
@@ -24,6 +25,8 @@ const tempDate = ref(dateToStr(props.selectedJob['date']))
 const tempURL = ref(props.selectedJob['url'])
 const tempNotes = ref(props.selectedJob['notes'])
 const tempCat = ref(props.selectedCat)
+const tempTags = ref(props.selectedJob['tags'])
+const tag = ref("")
 
 function editJob() {
   const editedJob = {
@@ -33,7 +36,8 @@ function editJob() {
     url: tempURL.value,
     notes: tempNotes.value,
     catID: tempCat.value['id'],
-    id: props.selectedJob['id'],
+    tags: JSON.parse(JSON.stringify(tempTags.value)), // deepcopy
+    id: props.selectedJob['id']
   }
   // save new job info to db
   db_jobs_update(editedJob)
@@ -58,6 +62,8 @@ function cancelEdit() {
     <input type="url" v-model="tempURL" id="input_url" placeholder="https://..." maxlength="300" autocomplete="off">
     <label for="input_notes">Notes</label>
     <textarea v-model="tempNotes" id="input_notes" maxlength="300" rows="3"></textarea>
+    <label for="input_tags">Tags</label>
+    <VueTagsInput v-model="tag" id="input_tags" :tags="tempTags" @tags-changed="(tags) => {tempTags = tags}" :max-tags="20" :maxlength="42"/>
     <label for="input_table"><span class="require">* </span>Table</label>
     <select v-model="tempCat" id="input_table" required>
       <option v-for="cat in cats" :value="cat">{{cat['name']}}</option>

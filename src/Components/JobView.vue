@@ -1,5 +1,7 @@
 <script setup>
+import { ref } from 'vue'
 import { dateToStr } from '../util'
+import VueTagsInput from '@sipec/vue3-tags-input'
 
 const props = defineProps({
   selectedCat: Object,
@@ -12,6 +14,9 @@ const emit = defineEmits([
   'job_edit',
   'job_delete'
 ])
+
+const tag = ref('')
+
 </script>
 
 <template>
@@ -47,6 +52,10 @@ const emit = defineEmits([
       </p>
     </div>
     <div class="info-item">
+      <h3>Tags</h3>
+      <VueTagsInput id="info-tags" v-model="tag" :tags="selectedJob['tags']" :max-tags="20" :maxlength="42" :disabled="true" :placeholder="''"/>
+    </div>
+    <div class="info-item">
       <h3>Table</h3>
       <p>
         {{ selectedCat['name'] }}
@@ -60,10 +69,13 @@ const emit = defineEmits([
   </div>
 </template>
 
-<style scoped>
+<style>
 
 .info-wrapper {
   --info-col: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .info-item {
@@ -72,6 +84,7 @@ const emit = defineEmits([
 
 .info-item h3 {
   padding-left: 2px;
+  margin-bottom: 4px;
 }
 
 .info-item p {
@@ -85,13 +98,18 @@ const emit = defineEmits([
   word-wrap: break-word;
 }
 
+.info-item .vue-tags-input {
+  width: 310px;
+  border: var(--border-col);
+}
+
 /* make notes field display taller */
 #info-notes {
   min-height: 84px;
   word-wrap: break-word;
 }
 
-button {
+.info-option-wrapper button {
   font-size: 18px;
 }
 
@@ -102,4 +120,32 @@ button {
   justify-content: space-evenly;
   margin: 10px 0;
 }
+
+.info-item .vue-tags-input {
+  background: var(--info-col) !important;
+}
+
+.info-item .vue-tags-input .ti-actions {
+  display: none !important;
+}
+
+@media(width <= 720px) {
+  .info-wrapper {
+    width: 80%;
+    margin: 0 10%;
+  }
+
+  .info-item {
+    width: 100%;
+  }
+
+  .info-item p {
+    width: 100%;
+  }
+
+  .info-item .vue-tags-input {
+    width: calc(100% + 10px) !important;
+  }
+}
+
 </style>

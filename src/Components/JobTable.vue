@@ -1,7 +1,7 @@
 <script setup>
 import { db_jobs_query, db_cats_query } from '../dbUtil'
-import { dateToShortStr, getFavicon } from '../util'
-import { computed, toRef, watch } from 'vue'
+import { dateToShortStr, getFavicon, sortJobs } from '../util'
+import { ref, computed, toRef, watch } from 'vue'
 
 const props = defineProps({
   selectedCat: Object,
@@ -14,11 +14,13 @@ const selectedCatRef = toRef(props, 'selectedCat')
 
 // table of jobs, reactive from Dexie's liveQuery()
 var jobs = db_jobs_query(1)
+// computed jobs, sorted by descending date
+var sortedJobs = computed(() => sortJobs(jobs.value))
 
-// update whenever selectedCat changes
+// update jobs and sortedJobs whenever selectedCat changes
 watch(selectedCatRef, (newCat) => {
-  //console.log(`selectedCat changed: id = ${newCat['id']}`)
   jobs = db_jobs_query(newCat['id'])
+  sortedJobs = computed(() => sortJobs(jobs.value))
 })
 
 // array of categories
@@ -42,6 +44,10 @@ function nextCat() {
   if(!hasNextCat.value) return
   emit('cat_select', cats.value[selectedCatIndex.value + 1])
 }
+
+// active sorting criteria
+const sortField = ref('date')
+const sortDesc = ref('false')
 </script>
 
 <template>
@@ -79,7 +85,7 @@ function nextCat() {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="job in jobs">
+            <tr v-for="job in sortedJobs">
               <td>
                 <img alt="-----" :src="getFavicon(job['url'])" height="32px" width="32px">
               </td>
