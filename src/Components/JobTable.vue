@@ -14,13 +14,14 @@ const selectedCatRef = toRef(props, 'selectedCat')
 
 // table of jobs, reactive from Dexie's liveQuery()
 var jobs = db_jobs_query(1)
-// computed jobs, sorted by descending date by default
-var sortedJobs = computed(() => sortJobs(jobs.value, 'date', true))
 
 // active field for sorting
 const sortField = ref('date')
 // sort order for active field
 const sortDesc = ref(true)
+
+// computed jobs, sorted by descending date by default
+var sortedJobs = computed(() => sortJobs(jobs.value, sortField.value, sortDesc.value))
 
 // function called when a column label is clicked
 function selectSortField(field){
