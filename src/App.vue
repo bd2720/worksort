@@ -84,18 +84,8 @@ const enlargeAside = computed(() => {
 </template>
 
 <style>
-:root {
-  --bg-col: #f7f7f7;
-  --header-col: #e7e7e7;
-  --aside-col: #d7d7d7;
-  --text-col: #0f0f0f;
-  --label-col: #474747;
-  --subtext-col: #8f8f8f;
-  --button-col: #e7e7e7;
-  --border-col: #bfbfbf;
-  --tag-col: #4582d3;
-  --red-col: #bd2720;
-}
+@import './assets/colors.css';
+
 * {
   padding: 0;
   margin: 0;
@@ -171,73 +161,6 @@ aside {
   margin: 10px;
 
   min-width: 120px;
-}
-
-.input-wrapper {
-  margin: 20px 10px;
-  display: flex;
-  flex-direction: column;
-}
-
-.input-wrapper > input, select, textarea {
-  font-size: 24px;
-  margin-bottom: 4px;
-}
-
-textarea {
-  min-height: 84px;
-  resize: vertical;
-}
-
-label {
-  color: var(--label-col);
-  font-size: 18px;
-  margin-bottom: 2px;
-}
-
-.require {
-  color: var(--red-col);
-}
-
-.input-wrapper button, 
-.input-wrapper input[type="submit"]  {
-  font-size: 18px;
-}
-
-.input-button-wrapper {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  padding-top: 8px;
-}
-
-.view-job-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* style tags */
-.vue-tags-input {
-  margin-bottom: 4px;
-  max-width: none !important;
-  overflow: hidden;
-}
-
-.vue-tags-input.ti-focus .ti-input {
-  border: 1px solid black;
-}
-
-.vue-tags-input .ti-new-tag-input {
-  color: var(--text-col);
-}
-
-.vue-tags-input .ti-tag {
-  background: var(--tag-col) !important;
-}
-
-.vue-tags-input .ti-deletion-mark {
-  background: var(--red-col) !important;
 }
 
 /* display aside on top of main, for mobile */

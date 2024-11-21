@@ -52,3 +52,7 @@ function cancelAdd(){
     </div>
   </form>
 </template>
+
+<style scoped>
+@import '../assets/fields.css';
+</style>

@@ -70,6 +70,7 @@ const tag = ref('')
 </template>
 
 <style>
+@import '../assets/fields.css';
 
 .info-wrapper {
   --info-col: #f9f9f9;
@@ -114,11 +115,10 @@ const tag = ref('')
 }
 
 .info-option-wrapper {
-  width: 300px;
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
-  margin: 10px 0;
+  margin: 10px 20px;
 }
 
 .info-item .vue-tags-input {

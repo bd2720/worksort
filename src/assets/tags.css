@@ -1,0 +1,24 @@
+/* Styling for components containing VueTagsInput */
+@import './colors.css';
+
+.vue-tags-input {
+  margin-bottom: 4px;
+  max-width: none !important;
+  overflow: hidden;
+}
+
+.vue-tags-input.ti-focus .ti-input {
+  border: 1px solid black;
+}
+
+.vue-tags-input .ti-new-tag-input {
+  color: var(--text-col);
+}
+
+.vue-tags-input .ti-tag {
+  background: var(--tag-col) !important;
+}
+
+.vue-tags-input .ti-deletion-mark {
+  background: var(--red-col) !important;
+}

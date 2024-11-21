@@ -10,7 +10,7 @@ export default db
 // create jobs, cats tables
 db.version(1).stores({
   // id is (auto-incrementing) primary key
-  jobs: '++id, title, company, date, catID',
+  jobs: '++id, title, company, date, *tags, catID',
   cats: '++id, &name',
 })
 

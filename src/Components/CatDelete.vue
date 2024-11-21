@@ -38,23 +38,5 @@ function cancelDelete(){
 </template>
 
 <style scoped>
-h3 {
-  font-size: 24px;
-  text-align: center;
-  margin: 8px 0;
-}
-p {
-  font-size: 20px;
-  text-align: center;
-  margin-bottom: 12px;
-}
-.delete-buttons {
-  display: flex;
-  justify-content: space-evenly;
-  margin-bottom: 12px;
-}
-button {
-  font-size: 24px;
-  width: 60px;
-}
+@import '../assets/delete.css';
 </style>

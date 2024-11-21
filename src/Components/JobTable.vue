@@ -53,7 +53,7 @@ const selectedCatIndex = computed(() => {
 })
 
 const hasPrevCat = computed(() => selectedCatIndex.value > 0 )
-const hasNextCat = computed(() => (cats.value != undefined) && selectedCatIndex.value < cats.value.length - 1 )
+const hasNextCat = computed(() => (cats.value !== undefined) && selectedCatIndex.value < cats.value.length - 1 )
 function prevCat() {
   if(!hasPrevCat.value) return
     emit('cat_select', cats.value[selectedCatIndex.value - 1])
