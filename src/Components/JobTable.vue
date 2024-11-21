@@ -1,6 +1,6 @@
 <script setup>
 import { db_jobs_query, db_cats_query } from '../dbUtil'
-import { dateToShortStr, getFavicon, sortJobs } from '../util'
+import { dateToShortStr, getFavicon, sortJobs, capitalize } from '../util'
 import { ref, computed, toRef, watch } from 'vue'
 
 const props = defineProps({
@@ -14,13 +14,30 @@ const selectedCatRef = toRef(props, 'selectedCat')
 
 // table of jobs, reactive from Dexie's liveQuery()
 var jobs = db_jobs_query(1)
-// computed jobs, sorted by descending date
-var sortedJobs = computed(() => sortJobs(jobs.value))
+// computed jobs, sorted by descending date by default
+var sortedJobs = computed(() => sortJobs(jobs.value, 'date', true))
+
+// active field for sorting
+const sortField = ref('date')
+// sort order for active field
+const sortDesc = ref(true)
+
+// function called when a column label is clicked
+function selectSortField(field){
+  // if field already selected, flip sorting order
+  if(field === sortField.value){
+    sortDesc.value = !sortDesc.value
+    return
+  }
+  // if new field, change selected field.
+  sortField.value = field
+  sortDesc.value = false
+}
 
 // update jobs and sortedJobs whenever selectedCat changes
 watch(selectedCatRef, (newCat) => {
   jobs = db_jobs_query(newCat['id'])
-  sortedJobs = computed(() => sortJobs(jobs.value))
+  sortedJobs = computed(() => sortJobs(jobs.value, sortField.value, sortDesc.value))
 })
 
 // array of categories
@@ -44,10 +61,6 @@ function nextCat() {
   if(!hasNextCat.value) return
   emit('cat_select', cats.value[selectedCatIndex.value + 1])
 }
-
-// active sorting criteria
-const sortField = ref('date')
-const sortDesc = ref('false')
 </script>
 
 <template>
@@ -78,9 +91,13 @@ const sortDesc = ref('false')
           <thead>
             <tr>
               <th></th>
-              <th>Title</th>
-              <th>Company</th>
-              <th>Date</th>
+              <th v-for="field in ['title', 'company', 'date']" class="sort" @click="selectSortField(field)">
+                {{ capitalize(field) }}
+                <span v-if="field === sortField">
+                  <span v-if="sortDesc">&darr;</span>
+                  <span v-else>&uarr;</span>
+                </span>
+              </th>
               <th></th>
             </tr>
           </thead>
@@ -94,7 +111,7 @@ const sortDesc = ref('false')
               <td>{{ dateToShortStr(job['date']) }}</td>
               <td>
                 <!-- disable view buttons if the aside is in focus -->
-                <button @click="emit('job_select', job)" :disabled="enlargeAside">View</button>
+                <button id="view" @click="emit('job_select', job)" :disabled="enlargeAside"><strong>...</strong></button>
               </td>
             </tr>
           </tbody>
@@ -116,6 +133,7 @@ const sortDesc = ref('false')
 #table-wrapper {
   --table-col: #e7e7e7;
   --table-head-col: #c7c7c7;
+  --table-sel-col: #b7b7b7;
   --table-alt-col: #d7d7d7;
 
   width: calc(100% - 60px);
@@ -160,7 +178,7 @@ thead {
 
 tr {
   display: grid;
-  grid-template-columns: 54px 1fr 1fr 82px 46px;
+  grid-template-columns: 54px 1fr 1fr 82px 28px;
   height: 50px;
   vertical-align: bottom;
 }
@@ -196,10 +214,24 @@ tr:nth-child(even) {
   background: var(--table-alt-col);
 }
 
-@media(width <=720px) {
+/* title, company and date headers must behave like buttons */
+.sort {
+  /* disable text selection */
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  /* change cursor */
+  cursor: pointer;
+}
+
+.sort:hover {
+  background: var(--table-sel-col);
+}
+
+@media(width <= 720px) {
   /* hide icon */
   tr {
-    grid-template-columns: 1fr 1fr 82px 46px;
+    grid-template-columns: 1fr 1fr 82px 28px;
   }
 
   th:first-child, td:first-child {

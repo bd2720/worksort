@@ -43,8 +43,22 @@ export function getTodayStr(){
   return dateToStr(new Date())
 }
 
-// sort the array of jobs based on attribute value
+// sort the array of jobs based on field value, ascending or descending
 // this has to be done in JS since Dexie doesn't support WHERE + ORDER BY
-export function sortJobs(jobs){
-  return jobs.sort((a, b) => a['date'] < b['date'])
+export function sortJobs(jobs, field, descending){
+  const mult = (descending) ? -1 : 1
+  // sort by field
+  switch (field){
+    case 'title':
+      return jobs.sort((a, b) => mult * a['title'].localeCompare(b['title']))
+    case 'company':
+      return jobs.sort((a, b) => mult * a['company'].localeCompare(b['company']))
+    case 'date':
+    default:
+      return jobs.sort((a, b) => mult * (a['date'] - b['date']))
+  }
+}
+// 'testword' => 'Testword'
+export function capitalize(word){
+  return word[0].toUpperCase() + word.slice(1)
 }
