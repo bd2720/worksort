@@ -1,0 +1,117 @@
+/* Styling for table components */
+#table-wrapper {
+  --table-col: #e7e7e7;
+  --table-head-col: #c7c7c7;
+  --table-sel-col: #b7b7b7;
+  --table-alt-col: #d7d7d7;
+
+  width: calc(100% - 60px);
+  margin: 20px;
+  background: var(--table-col);
+  padding: 8px;
+  border: 2px solid var(--border-col);
+}
+
+/* this fade transition is CRUCIAL for smooth table-to-table browsing!! */
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-leave-to {
+  opacity: 0;
+}
+
+p {
+  font-size: 24px;
+  text-align: center;
+  margin-top: 4px;
+}
+
+.table-header-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 5px;
+}
+
+.table-nav {
+  display: flex;
+  justify-content: space-between;
+  width: min(500px, 100%);
+}
+
+.table-header-wrapper button {
+  height: 36px;
+  font-size: 20px;
+}
+
+table {
+  width: 100%;
+}
+
+thead {
+  transform: translateY(2px);
+}
+
+tr {
+  display: grid;
+  grid-template-columns: 54px 1fr 1fr 82px 28px;
+  height: 50px;
+  vertical-align: bottom;
+}
+
+th, td {
+  border: 1px solid var(--border-col);
+  padding: 12px 0 0 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+td:first-child {
+  padding: 8px 0 0 0;
+  text-align: center;
+}
+
+th {
+  font-size: 140%;
+  background: var(--table-head-col);
+}
+
+td {
+  font-size: 120%;
+}
+
+th:nth-child(1), th:nth-child(5), th:nth-child(6) {
+  background: none;
+  border: none;
+}
+
+tr:nth-child(even) {
+  background: var(--table-alt-col);
+}
+
+/* title, company and date headers must behave like buttons */
+.sort {
+  /* disable text selection */
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  /* change cursor */
+  cursor: pointer;
+}
+
+.sort:hover {
+  background: var(--table-sel-col);
+}
+
+@media(width <= 720px) {
+  /* hide icon */
+  tr {
+    grid-template-columns: 1fr 1fr 82px 28px;
+  }
+
+  th:first-child, td:first-child {
+    display: none;
+  }
+}

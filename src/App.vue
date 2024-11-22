@@ -10,6 +10,8 @@ import CatAdd from './Components/CatAdd.vue'
 import CatEdit from './Components/CatEdit.vue'
 import CatDelete from './Components/CatDelete.vue'
 
+import SearchFields from './Components/SearchFields.vue'
+
 const addingJob = ref(false)
 const editingJob = ref(false)
 const deletingJob = ref(false)
@@ -26,17 +28,15 @@ const deletingCat = ref(false)
 // reference to the selected table
 const selectedCat = ref(mainCat)
 
-// show functional buttons (Add)
-const showFunctions = computed(() => {
-  return !addingJob.value && !editingJob.value && !jobSelected.value && !addingCat.value && !editingCat.value && !deletingCat.value
-})
+const searchingJobs = ref(false)
+
 // show extended job info (if a job is selected)
 const showExtendedJob = computed(() => {
   return jobSelected.value && !editingJob.value
 })
 // enlarge the aside if sub-menus are active
 const enlargeAside = computed(() => {
-  return addingJob.value || jobSelected.value || addingCat.value || editingCat.value || deletingCat.value
+  return addingJob.value || jobSelected.value || addingCat.value || editingCat.value || deletingCat.value || searchingJobs.value
 })
 </script>
 
@@ -52,9 +52,10 @@ const enlargeAside = computed(() => {
     </main>
     <aside :class="enlargeAside ? 'enlargeAside' : ''">
       <!-- ADD STUFF -->
-      <div class="function-wrapper" v-if="showFunctions">
+      <div class="function-wrapper" v-if="!enlargeAside">
         <button @click="addingJob = true">New Job</button>
         <button @click="addingCat = true">New Table</button>
+        <button @click="searchingJobs = true">Search Jobs</button>
       </div>
       <div class="add-job-wrapper" v-if="addingJob">
         <JobAdd :selectedCat="selectedCat" @job_add="(cat) => {addingJob = false; selectedCat = cat}" @cancel_add="addingJob = false"/>
@@ -78,6 +79,10 @@ const enlargeAside = computed(() => {
       </div>
       <div class="delete-cat-wrapper" v-if="deletingCat">
         <CatDelete :selectedCatID="selectedCat['id']" @cat_delete="deletingCat = false; selectedCat = mainCat" @cancel_delete="deletingCat = false"/>
+      </div>
+      <!-- SEARCH -->
+      <div class="search-wrapper" v-if="searchingJobs">
+        <SearchFields @search_submit="(fields) => { console.log(fields) }" @cancel_search="searchingJobs = false; selectedCat = mainCat"/>
       </div>
     </aside>
   </div>
@@ -161,6 +166,12 @@ aside {
   margin: 10px;
 
   min-width: 120px;
+}
+
+@media(width <= 1000px){
+  .enlargeAside {
+    width: 300px;
+  }
 }
 
 /* display aside on top of main, for mobile */
