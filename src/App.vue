@@ -28,7 +28,10 @@ const deletingCat = ref(false)
 // reference to the selected table
 const selectedCat = ref(mainCat)
 
+// true if searchingJobs
 const searchingJobs = ref(false)
+// previous search fields
+const fields = ref(undefined)
 
 // show extended job info (if a job is selected)
 const showExtendedJob = computed(() => {
@@ -48,7 +51,9 @@ const enlargeAside = computed(() => {
   <div class="main-wrapper">
     <!-- TABLE -->
     <main>
-      <JobTable :enlargeAside="enlargeAside" :selectedCat="selectedCat" @job_select="(job) => { selectedJob = job }" @cat_select="(cat) => { selectedCat = cat }" @cat_edit="editingCat = true" @cat_delete="deletingCat = true"/>
+      <JobTable :enlargeAside="enlargeAside" :selectedCat="selectedCat" :searchingJobs="searchingJobs" :fields = fields
+        @job_select="(job) => { selectedJob = job }" @cat_select="(cat) => { selectedCat = cat }"
+        @cat_edit="editingCat = true" @cat_delete="deletingCat = true" />
     </main>
     <aside :class="enlargeAside ? 'enlargeAside' : ''">
       <!-- ADD STUFF -->
@@ -58,31 +63,39 @@ const enlargeAside = computed(() => {
         <button @click="searchingJobs = true">Search Jobs</button>
       </div>
       <div class="add-job-wrapper" v-if="addingJob">
-        <JobAdd :selectedCat="selectedCat" @job_add="(cat) => {addingJob = false; selectedCat = cat}" @cancel_add="addingJob = false"/>
+        <JobAdd :selectedCat="selectedCat" @job_add="(cat) => { addingJob = false; selectedCat = cat }"
+          @cancel_add="addingJob = false" />
       </div>
       <div class="add-cat-wrapper" v-if="addingCat">
-        <CatAdd @cat_add="addingCat = false" @cancel_add="addingCat = false"/>
+        <CatAdd @cat_add="addingCat = false" @cancel_add="addingCat = false" />
       </div>
       <!-- JOB VIEW/EDIT/DEL -->
       <div class="view-job-wrapper" v-if="showExtendedJob">
-        <JobView :selectedJob="selectedJob" :selectedCat="selectedCat" :deletingJob="deletingJob" @job_deselect="selectedJob = undefined" @job_edit="editingJob = true" @job_delete="deletingJob = true"/>
+        <JobView :selectedJob="selectedJob" :selectedCat="selectedCat" :deletingJob="deletingJob"
+          @job_deselect="selectedJob = undefined" @job_edit="editingJob = true" @job_delete="deletingJob = true" />
       </div>
       <div class="edit-job-wrapper" v-if="editingJob">
-        <JobEdit :selectedJob="selectedJob" :selectedCat="selectedCat" @job_edit="(job, cat) => { editingJob = false; selectedJob = job; selectedCat = cat }" @cancel_edit="editingJob = false"/>
+        <JobEdit :selectedJob="selectedJob" :selectedCat="selectedCat"
+          @job_edit="(job, cat) => { editingJob = false; selectedJob = job; selectedCat = cat }"
+          @cancel_edit="editingJob = false" />
       </div>
       <div class="delete-job-wrapper" v-if="deletingJob">
-        <JobDelete :selectedJobID="selectedJob['id']" @job_delete="deletingJob = false; selectedJob = undefined" @cancel_delete="deletingJob = false"/>
+        <JobDelete :selectedJobID="selectedJob['id']" @job_delete="deletingJob = false; selectedJob = undefined"
+          @cancel_delete="deletingJob = false" />
       </div>
       <!-- CATEGORY EDIT/DEL -->
       <div class="edit-cat-wrapper" v-if="editingCat">
-        <CatEdit :selectedCat="selectedCat" @cat_edit="(cat) => { editingCat = false; selectedCat = cat } " @cancel_edit="editingCat = false"/>
+        <CatEdit :selectedCat="selectedCat" @cat_edit="(cat) => { editingCat = false; selectedCat = cat }"
+          @cancel_edit="editingCat = false" />
       </div>
       <div class="delete-cat-wrapper" v-if="deletingCat">
-        <CatDelete :selectedCatID="selectedCat['id']" @cat_delete="deletingCat = false; selectedCat = mainCat" @cancel_delete="deletingCat = false"/>
+        <CatDelete :selectedCatID="selectedCat['id']" @cat_delete="deletingCat = false; selectedCat = mainCat"
+          @cancel_delete="deletingCat = false" />
       </div>
       <!-- SEARCH -->
       <div class="search-wrapper" v-if="searchingJobs">
-        <SearchFields @search_submit="(fields) => { console.log(fields) }" @cancel_search="searchingJobs = false; selectedCat = mainCat"/>
+        <SearchFields @search_submit="(flds) => { fields = flds }"
+          @cancel_search="searchingJobs = false" />
       </div>
     </aside>
   </div>

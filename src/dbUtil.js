@@ -1,6 +1,7 @@
 import { liveQuery } from 'dexie'
 import { useObservable } from '@vueuse/rxjs'
 import db from './db.js'
+import { ref } from 'vue'
 
 /* JOBS */
 
@@ -29,7 +30,6 @@ export function db_jobs_delete(jobID) {
 
 // get array of jobs by category
 export function db_jobs_query(catID) {
-  // must pass category as a ref, so query updates with category
   return useObservable(
     liveQuery(async () => {
       console.log(`dbUtil.js: Job query triggered (catID = ${catID})`);
@@ -38,6 +38,14 @@ export function db_jobs_query(catID) {
         .toArray()
     })
   )
+}
+
+// search all jobs using the fields Object
+export async function db_jobs_search(fields) {
+  console.log(`dbUtil.js: Job search triggered (fields = ${JSON.stringify(fields)})`);
+  return await db.jobs
+    .where('title').startsWith(fields['title'])
+    .toArray()
 }
 
 /* CATEGORIES (TABLES) */

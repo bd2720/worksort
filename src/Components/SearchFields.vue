@@ -76,7 +76,4 @@ function cancelSearch(){
 
 <style scoped>
 @import '../assets/fields.css';
-
-
-
 </style>

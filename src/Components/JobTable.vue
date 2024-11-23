@@ -1,16 +1,17 @@
 <script setup>
-import { db_jobs_query, db_cats_query } from '../dbUtil'
+import { db_jobs_query, db_cats_query, db_jobs_search } from '../dbUtil'
 import { dateToShortStr, getFavicon, sortJobs, capitalize } from '../util'
 import { ref, computed, toRef, watch } from 'vue'
 
 const props = defineProps({
   selectedCat: Object,
-  enlargeAside: Boolean
+  searchingJobs: Boolean,
+  fields: Object,
+  enlargeAside: Boolean,
 })
 
 const emit = defineEmits(['job_select', 'cat_select', 'cat_edit', 'cat_delete'])
 
-const selectedCatRef = toRef(props, 'selectedCat')
 
 // table of jobs, reactive from Dexie's liveQuery()
 var jobs = db_jobs_query(1)
@@ -34,10 +35,30 @@ function selectSortField(field){
   sortField.value = field
   sortDesc.value = false
 }
-
 // update jobs and sortedJobs whenever selectedCat changes
+const selectedCatRef = toRef(props, 'selectedCat')
 watch(selectedCatRef, (newCat) => {
   jobs = db_jobs_query(newCat['id'])
+  sortedJobs = computed(() => sortJobs(jobs.value, sortField.value, sortDesc.value))
+})
+
+// watch searchingJobs to handle transition b/t nav and search modes
+const searchingJobsRef = toRef(props, 'searchingJobs')
+watch(searchingJobsRef, (newSearchingJobs) => {
+  // if done searching, display selected category
+  jobs = (newSearchingJobs) ? ref([]) : db_jobs_query(props.selectedCat['id'])
+  sortedJobs = computed(() => sortJobs(jobs.value, sortField.value, sortDesc.value))
+})
+
+// display/refresh search when fields update
+const fieldsRef = toRef(props, 'fields')
+watch(fieldsRef, async (newFields) => {
+  if(!newFields) return; // ensure not null
+  try {
+    jobs.value = await db_jobs_search(newFields)
+  }catch(err){
+    console.error('Search failed -- ' + err)
+  }
   sortedJobs = computed(() => sortJobs(jobs.value, sortField.value, sortDesc.value))
 })
 
@@ -68,7 +89,12 @@ function nextCat() {
   <div id="table-wrapper">
     <transition name="fade">
       <div id="table-content-wrapper" v-if="jobs">
-        <div class="table-header-wrapper">
+        <div class="table-header-wrapper" v-if="searchingJobs">
+          <div class="table-nav">
+            <h1 class="search-header">Results: {{ jobs.length }}</h1>
+          </div>
+        </div>
+        <div class="table-header-wrapper" v-else>
           <div class="table-nav">
             <button @click="prevCat" :disabled="!hasPrevCat || enlargeAside" title="Previous table">&lt;</button>
             <transition name="fade">
@@ -85,8 +111,9 @@ function nextCat() {
           Loading jobs...
         </p>
         <p v-else-if="!jobs.length">
-          You haven't added any jobs to this table yet. Click <strong>New Job</strong> to begin organizing, or
-          add some jobs from another table!
+          <span v-if="searchingJobs">No results. To search jobs across all tables, fill out some search fields and click <strong>Search</strong>!</span>
+          <span v-else>You haven't added any jobs to this table yet. Click <strong>New Job</strong> to begin organizing, or
+            add some jobs from another table!</span>
         </p>
         <table v-else>
           <thead>
@@ -124,4 +151,9 @@ function nextCat() {
 
 <style scoped>
 @import '../assets/table.css';
+
+.search-header {
+  width: 100%;
+  text-align: center;
+}
 </style>
