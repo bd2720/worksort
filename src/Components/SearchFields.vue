@@ -26,8 +26,8 @@ function submitSearch() {
     company: tempCompany.value,
     dateMin: new Date(tempDateMin.value),
     dateMax: new Date(tempDateMax.value),
-    cats: JSON.parse(JSON.stringify(tempCats.value)),
-    tags: JSON.parse(JSON.stringify(tempTags.value)) // deepcopy
+    cats: tempCats.value.map(cat => cat['id']),
+    tags: tempTags.value.map(tag => tag['text'])
   }
   // emit search object to parent
   emit('search_submit', fields)
@@ -52,17 +52,17 @@ function cancelSearch(){
 
 <template>
   <form class="input-wrapper" @submit.prevent="submitSearch">
-    <label for="input_title">Job Title</label>
+    <label for="input_title">Job Title <span class="tip">(starts with)</span></label>
     <input v-model="tempTitle" id="input_title" maxlength="50">
-    <label for="input_company">Company Name</label>
+    <label for="input_company">Company Name <span class="tip">(starts with)</span></label>
     <input v-model="tempCompany" id="input_company" maxlength="50">
-    <label for="input_date_min">From</label>
+    <label for="input_date_min">From <span class="tip">(date)</span></label>
     <input type="date" v-model="tempDateMin" id="input_date_min">
-    <label for="input_date_max">To</label>
+    <label for="input_date_max">To <span class="tip">(date)</span></label>
     <input type="date" v-model="tempDateMax" id="input_date_max">
-    <label for="input_tags">Tags</label>
+    <label for="input_tags">Tags <span class="tip">(any of)</span></label>
     <VueTagsInput v-model="tag" id="input_tags" :tags="tempTags" @tags-changed="(tags) => {tempTags = tags}" :max-tags="20" :maxlength="42"/>
-    <label for="input_table">Tables</label>
+    <label for="input_table">Tables <span class="tip">(one of)</span></label>
     <select v-model="tempCats" id="input_table" multiple>
       <option v-for="cat in cats" :value="cat">{{cat['name']}}</option>
     </select>
@@ -76,4 +76,11 @@ function cancelSearch(){
 
 <style scoped>
 @import '../assets/fields.css';
+@import '../assets/colors.css';
+
+.tip {
+  color: var(--subtext-col);
+  font-size: 80%;
+}
+
 </style>

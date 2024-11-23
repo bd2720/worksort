@@ -1,7 +1,7 @@
 import { liveQuery } from 'dexie'
 import { useObservable } from '@vueuse/rxjs'
 import db from './db.js'
-import { ref } from 'vue'
+import { dateBetween } from './util.js'
 
 /* JOBS */
 
@@ -41,11 +41,28 @@ export function db_jobs_query(catID) {
 }
 
 // search all jobs using the fields Object
+// asynchronously returns a non-reactive jobs array
 export async function db_jobs_search(fields) {
   console.log(`dbUtil.js: Job search triggered (fields = ${JSON.stringify(fields)})`);
-  return await db.jobs
-    .where('title').startsWith(fields['title'])
-    .toArray()
+  try {
+    // choose company as index (most restrictive), manually filter the rest
+    let tempQuery = await db.jobs.where('company').startsWith(fields['company'])
+    if(fields['title']){ // filter title
+      tempQuery = tempQuery.filter((job) => job['title'].startsWith(fields['title']))
+    }
+    if(!isNaN(fields['dateMin'].getTime()) || !isNaN(fields['dateMax'].getTime())){ // filter date range
+      tempQuery = tempQuery.filter((job) => dateBetween(job['date'], fields['dateMin'], fields['dateMax']))
+    }
+    if(fields['cats'].length){ // filter categories (anyOf)
+      tempQuery = tempQuery.filter((job) => (!fields['cats'].length) ? true : fields['cats'].includes(job['catID']))
+    }
+    if(fields['tags'].length){ // filter tables
+      tempQuery = tempQuery.filter((job) => (!fields['tags'].length) ? true : job['tags'].some((jobTag) => fields['tags'].includes(jobTag['text'])))
+    }
+    return tempQuery.toArray()
+  } catch(err) {
+    console.error('dbUtil.js: Job search failed -- ' + err)
+  }
 }
 
 /* CATEGORIES (TABLES) */

@@ -62,3 +62,11 @@ export function sortJobs(jobs, field, descending){
 export function capitalize(word){
   return word[0].toUpperCase() + word.slice(1)
 }
+
+// test whether x is in [low, high], accounting for low/high being invalid
+export function dateBetween(x, low, high){
+  let inbounds = true;
+  if(!isNaN(low.getTime())) inbounds &&= x >= low; // test lower bound
+  if(!isNaN(high.getTime())) inbounds &&= x <= high; // test upper bound
+  return inbounds;
+}

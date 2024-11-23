@@ -39,3 +39,14 @@ label {
   justify-content: space-evenly;
   padding-top: 8px;
 }
+
+input[type="submit"] {
+  background: var(--blue-col);
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+input[type="submit"]:hover {
+  filter: brightness(80%);
+}

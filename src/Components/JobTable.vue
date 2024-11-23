@@ -54,11 +54,7 @@ watch(searchingJobsRef, (newSearchingJobs) => {
 const fieldsRef = toRef(props, 'fields')
 watch(fieldsRef, async (newFields) => {
   if(!newFields) return; // ensure not null
-  try {
-    jobs.value = await db_jobs_search(newFields)
-  }catch(err){
-    console.error('Search failed -- ' + err)
-  }
+  jobs.value = await db_jobs_search(newFields)
   sortedJobs = computed(() => sortJobs(jobs.value, sortField.value, sortDesc.value))
 })
 

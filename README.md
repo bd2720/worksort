@@ -17,5 +17,5 @@ Streamline the application process using WorkSort -- a job posting organizer. Wo
 * ~~Saved history~~
 * ~~Categories (Default and Custom)~~
 * ~~Tags~~
-* Search feature
+* ~~Search feature~~
 * ~~Sort feature~~

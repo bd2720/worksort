@@ -16,7 +16,7 @@
 }
 
 .vue-tags-input .ti-tag {
-  background: var(--tag-col) !important;
+  background: var(--blue-col) !important;
 }
 
 .vue-tags-input .ti-deletion-mark {
