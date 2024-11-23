@@ -8,8 +8,10 @@ Streamline the application process using WorkSort -- a job posting organizer. Wo
 * Click `New Table` to create and name a new table.
 * Use `<` and `>` to navigate between different tables.
 * Rename or delete the selected job table with the `Edit` and `Delete` buttons to the right of the table name.
-  * *Note:* A table must be empty before it can be deleted. The `Main` table cannot be renamed or deleted. Two tables may not share the same name.
+  * *Note:* A table must be empty before it can be deleted. The *Main* table cannot be renamed or deleted. Two tables may not share the same name.
 * Click a table's column headers **Title**, **Company**, and **Date** to sort by column value and toggle sorting order. 
+* Search across all jobs using the `Search Jobs` button. Fill out any fields you'd like, including **Title**, **Company**, **To Date**, **From Date**, **Tags** and **Tables**, then press `Search` to display results.
+  * *Note:* If you don't want to filter on a particular field, just leave it blank.
 ## Coming Soon
 
 * ~~Style~~
@@ -19,3 +21,4 @@ Streamline the application process using WorkSort -- a job posting organizer. Wo
 * ~~Tags~~
 * ~~Search feature~~
 * ~~Sort feature~~
+* Release version
