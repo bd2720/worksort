@@ -181,20 +181,14 @@ aside {
   min-width: 120px;
 }
 
-@media(width <= 1000px){
+@media(width <= 1280px){
   .enlargeAside {
     width: 300px;
   }
 }
 
 /* display aside on top of main, for mobile */
-@media(width <= 720px){
-  header {
-    justify-content: center;
-  }
-  header p {
-    display: none;
-  }
+@media(width <= 926px){
 
   .main-wrapper {
     flex-direction: column-reverse;
@@ -217,6 +211,15 @@ aside {
   .function-wrapper button {
     font-size: 24px;
     padding: 10px 5px;
+  }
+}
+
+@media(width <= 720px){
+  header {
+    justify-content: center;
+  }
+  header p {
+    display: none;
   }
 }
 </style>

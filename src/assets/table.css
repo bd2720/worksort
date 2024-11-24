@@ -105,7 +105,7 @@ tr:nth-child(even) {
   background: var(--table-sel-col);
 }
 
-@media(width <= 720px) {
+@media(width <= 600px) {
   /* hide icon */
   tr {
     grid-template-columns: 1fr 1fr 82px 28px;

@@ -40,7 +40,11 @@ export function dateToShortStr(date) {
 
 // get today's date as 'yyyy-mm-dd'
 export function getTodayStr(){
-  return dateToStr(new Date())
+  const date = new Date()
+  const y = date.getFullYear()
+  const m = date.getMonth() + 1
+  const d = date.getDate()
+  return `${y}-${m}-${d}`
 }
 
 // sort the array of jobs based on field value, ascending or descending

@@ -81,6 +81,7 @@ const tag = ref('')
 
 .info-item {
   padding: 4px 0;
+  width: 80%;
 }
 
 .info-item h3 {
@@ -90,7 +91,7 @@ const tag = ref('')
 
 .info-item p {
   min-height: 28px;
-  width: 300px;
+  width: 100%;
   font-size: 24px;
   background: var(--info-col);
   border: 1px solid var(--border-col); 
@@ -100,7 +101,7 @@ const tag = ref('')
 }
 
 .info-item .vue-tags-input {
-  width: 310px;
+  width: calc(100% + 10px);
   border: var(--border-col);
 }
 

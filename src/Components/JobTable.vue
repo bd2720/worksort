@@ -126,7 +126,7 @@ function nextCat() {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="job in sortedJobs">
+            <tr v-for="job in sortedJobs" :key="job['id']">
               <td>
                 <img alt="-----" :src="getFavicon(job['url'])" height="32px" width="32px">
               </td>

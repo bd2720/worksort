@@ -54,10 +54,10 @@ export async function db_jobs_search(fields) {
       tempQuery = tempQuery.filter((job) => dateBetween(job['date'], fields['dateMin'], fields['dateMax']))
     }
     if(fields['cats'].length){ // filter categories (anyOf)
-      tempQuery = tempQuery.filter((job) => (!fields['cats'].length) ? true : fields['cats'].includes(job['catID']))
+      tempQuery = tempQuery.filter((job) => fields['cats'].includes(job['catID']))
     }
     if(fields['tags'].length){ // filter tables
-      tempQuery = tempQuery.filter((job) => (!fields['tags'].length) ? true : job['tags'].some((jobTag) => fields['tags'].includes(jobTag['text'])))
+      tempQuery = tempQuery.filter((job) => job['tags'].some((jobTag) => fields['tags'].includes(jobTag['text'])))
     }
     return tempQuery.toArray()
   } catch(err) {
