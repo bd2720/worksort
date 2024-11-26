@@ -31,7 +31,7 @@ if(props.fields){
   tempDateMin.value = props.fields['dateMin']
   tempDateMax.value = props.fields['dateMax']
   tempCats.value = JSON.parse(JSON.stringify(props.fields['cats'])) // deep copy
-  tempCats.value = JSON.parse(JSON.stringify(props.fields['tags'])) // deep copy
+  tempTags.value = JSON.parse(JSON.stringify(props.fields['tags'])) // deep copy
 }
 
 function submitSearch() {

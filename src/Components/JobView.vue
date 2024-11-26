@@ -87,6 +87,7 @@ const tag = ref('')
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 10px;
 }
 
 .info-item {
@@ -143,7 +144,7 @@ const tag = ref('')
 @media(width <= 720px) {
   .info-wrapper {
     width: 80%;
-    margin: 0 10%;
+    margin: 10px 10% 0;
   }
 
   .info-item {

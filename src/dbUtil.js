@@ -40,7 +40,7 @@ export function db_jobs_query(catID) {
   )
 }
 
-// search all jobs using the fields Object ()
+// search all jobs using the fields Object
 // asynchronously returns a non-reactive jobs array
 export async function db_jobs_search(fields) {
   console.log(`dbUtil.js: Job search triggered (fields = ${JSON.stringify(fields)})`);
@@ -59,9 +59,9 @@ export async function db_jobs_search(fields) {
       const cats = fields['cats'].map(cat => cat['id']) // convert
       tempQuery = tempQuery.filter((job) => cats.includes(job['catID']))
     }
-    if(fields['tags'].length){ // filter tables
+    if(fields['tags'].length){ // filter tags
       const tags = fields['tags'].map(tag => tag['text']) // convert
-      tempQuery = tempQuery.filter((job) => job['tags'].some((jobTag) => fields['tags'].includes(jobTag['text'])))
+      tempQuery = tempQuery.filter((job) => job['tags'].some((jobTag) => tags.includes(jobTag['text'])))
     }
     return tempQuery.toArray()
   } catch(err) {
