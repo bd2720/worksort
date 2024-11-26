@@ -48,11 +48,11 @@ function cancelAdd(){
 
 <template>
   <form class="input-wrapper" @submit.prevent="addJob">
-    <label for="input_title">Job Title<span class="require"> *</span></label>
+    <label for="input_title"><span class="require"> *</span>Job Title</label>
     <input v-model="tempTitle" id="input_title" maxlength="50" required>
-    <label for="input_company">Company Name<span class="require"> *</span></label>
+    <label for="input_company"><span class="require"> *</span>Company Name</label>
     <input v-model="tempCompany" id="input_company" maxlength="50" required>
-    <label for="input_date">Date Applied<span class="require"> *</span></label>
+    <label for="input_date"><span class="require"> *</span>Date Applied</label>
     <input type="date" v-model="tempDate" id="input_date" required>
     <label for="input_url">Link</label>
     <input type="url" v-model="tempURL" id="input_url" placeholder="https://..." maxlength="300" autocomplete="off">
@@ -60,9 +60,9 @@ function cancelAdd(){
     <textarea v-model="tempNotes" id="input_notes" maxlength="300" rows="3"></textarea>
     <label for="input_tags">Tags</label>
     <VueTagsInput v-model="tag" id="input_tags" :tags="tempTags" @tags-changed="(tags) => {tempTags = tags}" :max-tags="20" :maxlength="42"/>
-    <label for="input_table">Table<span class="require"> *</span></label>
+    <label for="input_table"><span class="require"> *</span>Table</label>
     <select v-model="tempCat" id="input_table" required>
-      <option v-for="cat in cats" :value="cat">{{cat['name']}}</option>
+      <option v-for="cat in cats" :key="cat['id']" :value="cat">{{cat['name']}}</option>
     </select>
     <div class="input-button-wrapper">
       <input type="submit" value="Add Job" />

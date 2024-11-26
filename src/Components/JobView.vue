@@ -1,12 +1,13 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { db_cats_query } from '../dbUtil.js'
 import { dateToStr } from '../util'
 import VueTagsInput from '@sipec/vue3-tags-input'
 
 const props = defineProps({
-  selectedCat: Object,
   selectedJob: Object,
-  deletingJob: Boolean
+  deletingJob: Boolean,
+  searchingJobs: Boolean
 })
 
 const emit = defineEmits([
@@ -14,6 +15,13 @@ const emit = defineEmits([
   'job_edit',
   'job_delete'
 ])
+
+// have to find category manually, since selectedCat may not match
+const cats = db_cats_query()
+const selectedCat = ref(undefined)
+watch(cats, (newCats) => {
+  if(newCats) selectedCat.value = newCats.find((cat) => cat['id'] === props.selectedJob['catID']) 
+})
 
 const tag = ref('')
 
@@ -58,14 +66,16 @@ const tag = ref('')
     <div class="info-item">
       <h3>Table</h3>
       <p>
-        {{ selectedCat['name'] }}
+        <span v-if="selectedCat">
+          {{ selectedCat['name'] }}
+        </span>
       </p>
     </div>
   </div>
   <div v-if="!deletingJob" class="info-option-wrapper">
     <button @click="emit('job_deselect')">Close</button>
-    <button @click="emit('job_edit')">Edit</button>
-    <button @click="emit('job_delete')">Delete</button>
+    <button v-if="!searchingJobs" @click="emit('job_edit')">Edit</button>
+    <button v-if="!searchingJobs" @click="emit('job_delete')">Delete</button>
   </div>
 </template>
 

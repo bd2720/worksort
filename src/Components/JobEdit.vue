@@ -66,7 +66,7 @@ function cancelEdit() {
     <VueTagsInput v-model="tag" id="input_tags" :tags="tempTags" @tags-changed="(tags) => {tempTags = tags}" :max-tags="20" :maxlength="42"/>
     <label for="input_table"><span class="require">* </span>Table</label>
     <select v-model="tempCat" id="input_table" required>
-      <option v-for="cat in cats" :value="cat">{{cat['name']}}</option>
+      <option v-for="cat in cats" :key="cat['id']" :value="cat">{{cat['name']}}</option>
     </select>
     <div class="input-button-wrapper">
       <input type="submit" value="Save" />

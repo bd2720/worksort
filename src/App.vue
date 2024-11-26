@@ -28,9 +28,9 @@ const deletingCat = ref(false)
 // reference to the selected table
 const selectedCat = ref(mainCat)
 
-// true if searchingJobs
+// true if querying instead of navigating tables
 const searchingJobs = ref(false)
-// previous search fields
+// search fields
 const fields = ref(undefined)
 
 // show extended job info (if a job is selected)
@@ -51,7 +51,7 @@ const enlargeAside = computed(() => {
   <div class="main-wrapper">
     <!-- TABLE -->
     <main>
-      <JobTable :enlargeAside="enlargeAside" :selectedCat="selectedCat" :searchingJobs="searchingJobs" :fields = fields
+      <JobTable :enlargeAside="enlargeAside" :selectedCat="selectedCat" :searchingJobs="searchingJobs" :fields="fields"
         @job_select="(job) => { selectedJob = job }" @cat_select="(cat) => { selectedCat = cat }"
         @cat_edit="editingCat = true" @cat_delete="deletingCat = true" />
     </main>
@@ -71,7 +71,7 @@ const enlargeAside = computed(() => {
       </div>
       <!-- JOB VIEW/EDIT/DEL -->
       <div class="view-job-wrapper" v-if="showExtendedJob">
-        <JobView :selectedJob="selectedJob" :selectedCat="selectedCat" :deletingJob="deletingJob"
+        <JobView :selectedJob="selectedJob" :deletingJob="deletingJob" :searchingJobs="searchingJobs"
           @job_deselect="selectedJob = undefined" @job_edit="editingJob = true" @job_delete="deletingJob = true" />
       </div>
       <div class="edit-job-wrapper" v-if="editingJob">
@@ -93,9 +93,8 @@ const enlargeAside = computed(() => {
           @cancel_delete="deletingCat = false" />
       </div>
       <!-- SEARCH -->
-      <div class="search-wrapper" v-if="searchingJobs">
-        <SearchFields @search_submit="(flds) => { fields = flds }"
-          @cancel_search="searchingJobs = false" />
+      <div class="search-wrapper" v-if="searchingJobs && !jobSelected">
+        <SearchFields @search_submit="(flds) => { fields = flds }" @cancel_search="searchingJobs = false;" />
       </div>
     </aside>
   </div>

@@ -135,7 +135,7 @@ function nextCat() {
               <td>{{ dateToShortStr(job['date']) }}</td>
               <td>
                 <!-- disable view buttons if the aside is in focus -->
-                <button id="view" @click="emit('job_select', job)" :disabled="enlargeAside"><strong>...</strong></button>
+                <button id="view" @click="emit('job_select', job)" :disabled="!searchingJobs && enlargeAside"><strong>...</strong></button>
               </td>
             </tr>
           </tbody>
