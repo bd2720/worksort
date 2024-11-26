@@ -94,7 +94,7 @@ const enlargeAside = computed(() => {
       </div>
       <!-- SEARCH -->
       <div class="search-wrapper" v-if="searchingJobs && !jobSelected">
-        <SearchFields @search_submit="(flds) => { fields = flds }" @cancel_search="searchingJobs = false;" />
+        <SearchFields :fields="fields" @search_submit="(flds) => { fields = flds }" @cancel_search="searchingJobs = false;" />
       </div>
     </aside>
   </div>

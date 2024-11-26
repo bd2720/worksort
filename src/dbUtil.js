@@ -40,7 +40,7 @@ export function db_jobs_query(catID) {
   )
 }
 
-// search all jobs using the fields Object
+// search all jobs using the fields Object ()
 // asynchronously returns a non-reactive jobs array
 export async function db_jobs_search(fields) {
   console.log(`dbUtil.js: Job search triggered (fields = ${JSON.stringify(fields)})`);
@@ -50,13 +50,17 @@ export async function db_jobs_search(fields) {
     if(fields['title']){ // filter title
       tempQuery = tempQuery.filter((job) => job['title'].startsWith(fields['title']))
     }
-    if(!isNaN(fields['dateMin'].getTime()) || !isNaN(fields['dateMax'].getTime())){ // filter date range
-      tempQuery = tempQuery.filter((job) => dateBetween(job['date'], fields['dateMin'], fields['dateMax']))
+    if(fields['dateMin'] || fields['dateMax']){ // filter date range
+      const dateMin = new Date(fields['dateMin']) // convert
+      const dateMax = new Date(fields['dateMax']) // convert
+      tempQuery = tempQuery.filter((job) => dateBetween(job['date'], dateMin, dateMax))
     }
     if(fields['cats'].length){ // filter categories (anyOf)
-      tempQuery = tempQuery.filter((job) => fields['cats'].includes(job['catID']))
+      const cats = fields['cats'].map(cat => cat['id']) // convert
+      tempQuery = tempQuery.filter((job) => cats.includes(job['catID']))
     }
     if(fields['tags'].length){ // filter tables
+      const tags = fields['tags'].map(tag => tag['text']) // convert
       tempQuery = tempQuery.filter((job) => job['tags'].some((jobTag) => fields['tags'].includes(jobTag['text'])))
     }
     return tempQuery.toArray()

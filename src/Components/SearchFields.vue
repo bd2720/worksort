@@ -3,6 +3,10 @@ import { ref } from 'vue'
 import { db_cats_query } from '../dbUtil'
 import VueTagsInput from '@sipec/vue3-tags-input'
 
+const props = defineProps({
+  fields: Object
+})
+
 const emit = defineEmits([
   'search_submit',
   'cancel_search'
@@ -20,14 +24,24 @@ const tempCats = ref([])
 const tempTags = ref([])
 const tag = ref("")
 
+// attempt to initialize input variables from field Object
+if(props.fields){
+  tempTitle.value = props.fields['title']
+  tempCompany.value = props.fields['company']
+  tempDateMin.value = props.fields['dateMin']
+  tempDateMax.value = props.fields['dateMax']
+  tempCats.value = JSON.parse(JSON.stringify(props.fields['cats'])) // deep copy
+  tempCats.value = JSON.parse(JSON.stringify(props.fields['tags'])) // deep copy
+}
+
 function submitSearch() {
   const fields = {
     title: tempTitle.value,
     company: tempCompany.value,
-    dateMin: new Date(tempDateMin.value),
-    dateMax: new Date(tempDateMax.value),
-    cats: tempCats.value.map(cat => cat['id']),
-    tags: tempTags.value.map(tag => tag['text'])
+    dateMin: tempDateMin.value,
+    dateMax: tempDateMax.value,
+    cats: tempCats.value,
+    tags: tempTags.value
   }
   // emit search object to parent
   emit('search_submit', fields)
