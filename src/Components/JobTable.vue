@@ -1,7 +1,8 @@
 <script setup>
 import { db_jobs_query, db_cats_query, db_jobs_search } from '../dbUtil'
-import { dateToShortStr, getFavicon, sortJobs, capitalize } from '../util'
+import { dateToShortStr, sortJobs, capitalize } from '../util'
 import { ref, computed, toRef, watch } from 'vue'
+import JobIcon from './JobIcon.vue'
 
 const props = defineProps({
   selectedCat: Object,
@@ -128,7 +129,7 @@ function nextCat() {
           <tbody>
             <tr v-for="job in sortedJobs" :key="job['id']">
               <td>
-                <img alt="-----" :src="getFavicon(job['url'])" height="32px" width="32px">
+                <JobIcon :url="job['url']" :size="32"/>
               </td>
               <td>{{ job['title'] }}</td>
               <td>{{ job['company'] }}</td>
