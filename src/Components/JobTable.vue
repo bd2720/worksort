@@ -98,10 +98,12 @@ function nextCat() {
               <h1 v-if="selectedCat">{{ props.selectedCat['name'] }}</h1>
             </transition>
             <h1 v-if="!selectedCat">Main</h1>
-            <button @click="nextCat" :disabled="!hasNextCat | enlargeAside" title="Next table">&gt;</button>
+            <button @click="nextCat" :disabled="!hasNextCat || enlargeAside" title="Next table">&gt;</button>
           </div>
-          <button @click="emit('cat_edit')" :disabled=" selectedCat['id'] === 1 || enlargeAside" title="Rename this table">Edit</button>
-          <button @click="emit('cat_delete')" :disabled="selectedCat['id'] === 1 || enlargeAside || jobs.length > 0" title="Delete this table">Delete</button>
+          <div class="table-opt">
+            <button @click="emit('cat_edit')" :disabled=" selectedCat['id'] === 1 || enlargeAside" title="Rename this table">Edit</button>
+            <button @click="emit('cat_delete')" :disabled="selectedCat['id'] === 1 || enlargeAside || jobs.length > 0" title="Delete this table">Delete</button>
+          </div>
         </div>
         <!-- Failsafe -->
         <p v-if="!jobs">
@@ -134,9 +136,11 @@ function nextCat() {
               <td>{{ job['title'] }}</td>
               <td>{{ job['company'] }}</td>
               <td>{{ dateToShortStr(job['date']) }}</td>
-              <td>
+              <td id="view-button-cell">
                 <!-- disable view buttons if the aside is in focus -->
-                <button id="view" @click="emit('job_select', job)" :disabled="!searchingJobs && enlargeAside"><strong>...</strong></button>
+                <button id="view" :disabled="!searchingJobs && enlargeAside" 
+                  @click="emit('job_select', job)"
+                  :onClick="e => e.preventDefault()"><strong>...</strong></button>
               </td>
             </tr>
           </tbody>

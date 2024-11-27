@@ -110,6 +110,11 @@ const enlargeAside = computed(() => {
   font-family: serif;
 }
 
+html {
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
+}
+
 body {
   background-color: var(--bg-col);
   color: var(--text-col);
@@ -120,6 +125,12 @@ button, input[type="submit"] {
   font-family: sans-serif;
   color: var(--subtext-col);
   padding: 0.2% 1%;
+  /* disable text selection */
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  /* disable double-tap zoom on mobile */
+  touch-action: manipulation;
 }
 
 header {
@@ -172,15 +183,17 @@ aside {
   height: calc(100% - 64px);
   text-align: center;
   padding-top: 20px;
+  padding-left: 20%;
+  padding-right: 20%;
 }
+
 .function-wrapper button {
-  width: 60%;
   font-size: 32px;
-  margin: 10px;
-
-  min-width: 120px;
+  margin: 8px 0 8px 0;
+  width: 100%;
 }
 
+/* slightly shrink aside to save space before switching layout */
 @media(width <= 1280px){
   .enlargeAside {
     width: 300px;
@@ -189,7 +202,6 @@ aside {
 
 /* display aside on top of main, for mobile */
 @media(width <= 926px){
-
   .main-wrapper {
     flex-direction: column-reverse;
     justify-content: flex-end;
@@ -202,7 +214,7 @@ aside {
   }
 
   .function-wrapper {
-    padding: 5px;
+    padding-top: 5px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -220,6 +232,14 @@ aside {
   }
   header p {
     display: none;
+  }
+}
+
+/* widen aside buttons for iOS */
+@media(max-device-width: 926px){
+  .function-wrapper {
+    padding-left: 10%;
+    padding-right: 10%;
   }
 }
 </style>
