@@ -183,13 +183,14 @@ aside {
   height: calc(100% - 64px);
   text-align: center;
   padding-top: 20px;
-  padding-left: 20%;
-  padding-right: 20%;
+  padding-left: 10%;
+  padding-right: 10%;
 }
 
 .function-wrapper button {
   font-size: 32px;
   margin: 8px 0 8px 0;
+  padding: 0 16px 0 16px;
   width: 100%;
 }
 
@@ -232,14 +233,6 @@ aside {
   }
   header p {
     display: none;
-  }
-}
-
-/* widen aside buttons for iOS */
-@media(max-device-width: 926px){
-  .function-wrapper {
-    padding-left: 10%;
-    padding-right: 10%;
   }
 }
 </style>
