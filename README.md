@@ -1,5 +1,5 @@
 # WorkSort
-Streamline the application process using **WorkSort**, a job posting organizer. **WorkSort** is a web app designed for bookmarking and organizing job postings. Add, tag, search and sort the jobs you've applied for, keeping your job application process on track.
+Streamline the application process using **WorkSort**, a job posting organizer. **WorkSort** is a web app designed for bookmarking and organizing job postings. Add, tag, search and sort the jobs you've applied for, keeping your job application process on track..
 
 ### [Click here to try it out!](https://bd2720.github.io/worksort)
 
