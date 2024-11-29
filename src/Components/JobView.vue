@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, computed, toRef } from 'vue'
 import { db_cats_query } from '../dbUtil.js'
 import { dateToStr } from '../util'
 import VueTagsInput from '@sipec/vue3-tags-input'
@@ -18,9 +18,10 @@ const emit = defineEmits([
 
 // have to find category manually, since selectedCat may not match
 const cats = db_cats_query()
-const selectedCat = ref(undefined)
-watch(cats, (newCats) => {
-  if(newCats) selectedCat.value = newCats.find((cat) => cat['id'] === props.selectedJob['catID']) 
+// make ref, so we can use in computed value
+const selectedJobRef = toRef(props, 'selectedJob')
+const selectedCat = computed(() => {
+  if(cats.value) return cats.value.find((cat) => cat['id'] === selectedJobRef.value['catID'])
 })
 
 const tag = ref('')
