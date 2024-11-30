@@ -33,6 +33,10 @@ const searchingJobs = ref(false)
 // search fields
 const fields = ref(undefined)
 
+// whether job is being viewed (without editing/deleting)
+const viewingJob = computed(() => {
+  return jobSelected.value && !editingJob.value && !deletingJob.value
+})
 // show extended job info (if a job is selected)
 const showExtendedJob = computed(() => {
   return jobSelected.value && !editingJob.value
@@ -51,7 +55,7 @@ const enlargeAside = computed(() => {
   <div class="main-wrapper">
     <!-- TABLE -->
     <main>
-      <JobTable :enlargeAside="enlargeAside" :selectedCat="selectedCat" :searchingJobs="searchingJobs" :fields="fields"
+      <JobTable :enlargeAside="enlargeAside" :selectedCat="selectedCat" :searchingJobs="searchingJobs" :viewingJob="viewingJob" :fields="fields"
         @job_select="(job) => { selectedJob = job }" @cat_select="(cat) => { selectedCat = cat }"
         @cat_edit="editingCat = true" @cat_delete="deletingCat = true" />
     </main>
@@ -215,7 +219,7 @@ aside {
   }
 
   .function-wrapper {
-    padding-top: 5px;
+    padding-top: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -227,6 +231,7 @@ aside {
   }
 }
 
+/* shorten header */
 @media(width <= 720px){
   header {
     justify-content: center;

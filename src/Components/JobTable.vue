@@ -7,6 +7,7 @@ import JobIcon from './JobIcon.vue'
 const props = defineProps({
   selectedCat: Object,
   searchingJobs: Boolean,
+  viewingJob: Boolean,
   fields: Object,
   enlargeAside: Boolean,
 })
@@ -138,7 +139,7 @@ function nextCat() {
               <td>{{ dateToShortStr(job['date']) }}</td>
               <td id="view-button-cell">
                 <!-- disable view buttons if the aside is in focus -->
-                <button id="view" :disabled="!searchingJobs && enlargeAside" 
+                <button id="view" :disabled="!searchingJobs && !viewingJob && enlargeAside" 
                   @click="emit('job_select', job)"
                   :onClick="e => e.preventDefault()"><strong>...</strong></button>
               </td>
