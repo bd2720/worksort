@@ -88,7 +88,7 @@ function nextCat() {
     <transition name="fade">
       <div id="table-content-wrapper" v-if="jobs">
         <div class="table-header-wrapper" v-if="searchingJobs">
-          <div class="table-nav">
+          <div class="table-nav results">
             <h1 class="search-header">Results: {{ jobs.length }}</h1>
           </div>
         </div>
@@ -153,6 +153,10 @@ function nextCat() {
 
 <style scoped>
 @import '../assets/table.css';
+
+.results {
+  width: 100%;
+}
 
 .search-header {
   width: 100%;
