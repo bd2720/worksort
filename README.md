@@ -26,3 +26,16 @@ Streamline the application process using **WorkSort**, a job posting organizer. 
 * ~~Search feature~~
 * ~~Sort feature~~
 * ~~Release version~~
+
+## Changelog
+
+### v1.0.0
+* Initial release
+
+### v1.0.1
+* Fixed a reactivity bug while viewing jobs
+* Made view button (`...`) clickable while viewing a job
+* Fixed a bug related to incorrect date display
+* Miscellaneous style fixes
+
+### v1.0.2
